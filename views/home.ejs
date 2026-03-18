@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CityWise</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <!-- top navigation bar -->
+    <header class="navbar">
+
+        <div class="nav-left">
+            <a href="/" class="logo">CityWise</a>
+        </div>
+
+        <div class="nav-right">
+
+            <% if (!isLoggedIn) { %>
+
+                <a href="/register">Create Account</a>
+                <span class="divider">|</span>
+                <a href="/login">Log In</a>
+
+            <% } else { %>
+
+                <a href="/profile"><%= username %></a>
+                <span class="divider">|</span>
+                <a href="/logout">Log Out</a>
+
+            <% } %>
+
+        </div>
+
+    </header>
+
+    <main class="home-container">
+
+        <!-- welcome section -->
+        <section class="hero">
+
+            <h1>Welcome to CityWise</h1>
+
+            <p>
+                Explore cities around the world, learn fun facts, and test your
+                knowledge with trivia quizzes.
+            </p>
+
+        </section>
+
+        <!-- cities section -->
+        <section class="cities-section">
+
+            <h2>Featured Cities</h2>
+
+            <div class="city-grid">
+
+                <% for (var i = 0; i < cities.length; i++) { %>
+
+                    <div class="city-card">
+
+                        <h3><%= cities[i] %></h3>
+
+                        <p>Learn about this city and take its quiz.</p>
+
+                        <button>View City</button>
+
+                    </div>
+
+                <% } %>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>

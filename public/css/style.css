@@ -1,0 +1,104 @@
+/* page background and default font */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f7f4ed;
+    color: #222;
+}
+
+/* top navigation bar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background-color: #d8c3a5;
+    border-bottom: 2px solid #b89b72;
+}
+
+/* website logo */
+.logo {
+    text-decoration: none;
+    font-size: 28px;
+    font-weight: bold;
+    color: #3a2f22;
+}
+
+/* links on the right side of navbar */
+.nav-right a {
+    text-decoration: none;
+    color: #3a2f22;
+    font-weight: bold;
+    margin: 0 5px;
+}
+
+/* divider between login links */
+.divider {
+    margin: 0 5px;
+    color: #3a2f22;
+}
+
+/* main content container */
+.home-container {
+    padding: 40px;
+}
+
+/* welcome section */
+.hero {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.hero h1 {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    font-size: 18px;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* cities section title */
+.cities-section h2 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* grid layout for city cards */
+.city-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+/* individual city card */
+.city-card {
+    background-color: white;
+    border: 2px solid #d6c1a3;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.city-card h3 {
+    margin-top: 0;
+    font-size: 20px;
+}
+
+/* button inside city card */
+.city-card button {
+    margin-top: 10px;
+    padding: 10px 14px;
+    border: none;
+    background-color: #8d6e63;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* hover effect for button */
+.city-card button:hover {
+    background-color: #6d4c41;
+}

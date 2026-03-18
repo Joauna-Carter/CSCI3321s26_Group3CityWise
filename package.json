@@ -1,0 +1,25 @@
+{
+  "name": "csci3321s26_group3citywise",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Joauna-Carter/CSCI3321s26_Group3CityWise.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Joauna-Carter/CSCI3321s26_Group3CityWise/issues"
+  },
+  "homepage": "https://github.com/Joauna-Carter/CSCI3321s26_Group3CityWise#readme",
+  "dependencies": {
+    "ejs": "^5.0.1",
+    "express": "^5.2.1"
+  }
+}
