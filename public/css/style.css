@@ -102,3 +102,49 @@ body {
 .city-card button:hover {
     background-color: #6d4c41;
 }
+
+/* create account form section */
+.form-section {
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: white;
+    border: 2px solid #d6c1a3;
+    border-radius: 10px;
+    padding: 25px;
+}
+
+.form-section h1 {
+    text-align: center;
+    margin-top: 0;
+}
+
+.account-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.account-form label {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.account-form input {
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.account-form button {
+    margin-top: 10px;
+    padding: 10px;
+    border: none;
+    background-color: #8d6e63;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.account-form button:hover {
+    background-color: #6d4c41;
+}

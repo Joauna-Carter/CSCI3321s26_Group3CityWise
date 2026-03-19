@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - CityWise</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-left">
+            <a href="/" class="logo">CityWise</a>
+        </div>
+
+        <div class="nav-right">
+            <a href="/register">Create Account</a>
+            <span class="divider">|</span>
+            <a href="/login">Log In</a>
+        </div>
+    </header>
+
+    <main class="home-container">
+        <section class="form-section">
+            <h1>Create Account</h1>
+
+            <form action="/register" method="POST" class="account-form">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username">
+
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password">
+
+                <button type="submit">Create Account</button>
+            </form>
+        </section>
+    </main>
+
+</body>
+</html>
