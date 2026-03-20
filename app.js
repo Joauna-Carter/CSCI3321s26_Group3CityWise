@@ -65,23 +65,81 @@ app.post("/register", function(req, res) {
 
 // profile page
 app.get("/profile", function(req, res) {
+
     if (!isLoggedIn) {
         res.redirect("/");
         return;
     }
 
+    res.render("profile", {
+        username: username
+    });
+
+});
+
+// show login page
+app.get("/login", function(req, res) {
+    res.render("login");
+});
+
+// handle login form
+app.post("/login", function(req, res) {
+
+    var inputUsername = req.body.username;
+    var inputPassword = req.body.password;
+
+    // check if empty
+    if (inputUsername == "" || inputPassword == "") {
+        res.send("Please enter username and password. <a href='/login'>Go back</a>");
+        return;
+    }
+
+    // since we don't have a database yet,
+    // we compare with the stored variable
+    if (inputUsername == username) {
+
+        isLoggedIn = true;
+
+        res.redirect("/");
+    } else {
+
+        res.send("User not found. <a href='/login'>Try again</a>");
+    }
+
+});
+
+// cities page placeholder
+app.get("/cities", function(req, res) {
     res.send(
-        "<h1>" + username + "'s Profile</h1>" +
-        "<p>This is a placeholder profile page.</p>" +
+        "<h1>City Index Page</h1>" +
+        "<p>This page will show all cities in the game.</p>" +
         "<a href='/'>Back to Home</a>"
     );
 });
 
-// login page placeholder
-app.get("/login", function(req, res) {
+// trivia quiz page placeholder
+app.get("/quiz", function(req, res) {
     res.send(
-        "<h1>Log In Page</h1>" +
-        "<p>This is a placeholder page for now.</p>" +
+        "<h1>Trivia Quiz Page</h1>" +
+        "<p>This page will let users answer city trivia questions.</p>" +
+        "<a href='/'>Back to Home</a>"
+    );
+});
+
+// leaderboard page placeholder
+app.get("/leaderboard", function(req, res) {
+    res.send(
+        "<h1>Leaderboard Page</h1>" +
+        "<p>This page will show user rankings based on scores.</p>" +
+        "<a href='/'>Back to Home</a>"
+    );
+});
+
+// statistics page placeholder
+app.get("/statistics", function(req, res) {
+    res.send(
+        "<h1>Statistics Page</h1>" +
+        "<p>This page will show user and site statistics.</p>" +
         "<a href='/'>Back to Home</a>"
     );
 });
@@ -97,3 +155,4 @@ app.get("/logout", function(req, res) {
 app.listen(PORT, function() {
     console.log("Server running at http://localhost:" + PORT);
 });
+

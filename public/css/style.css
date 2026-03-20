@@ -16,12 +16,43 @@ body {
     border-bottom: 2px solid #b89b72;
 }
 
+/* left side of navbar */
+.nav-left {
+    display: flex;
+    align-items: center;
+}
+
+/* center tabs */
+.nav-center {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+/* right side of navbar */
+.nav-right {
+    display: flex;
+    align-items: center;
+}
+
 /* website logo */
 .logo {
     text-decoration: none;
     font-size: 28px;
     font-weight: bold;
     color: #3a2f22;
+}
+
+/* center nav tabs */
+.nav-tab {
+    text-decoration: none;
+    color: #3a2f22;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.nav-tab:hover {
+    text-decoration: underline;
 }
 
 /* links on the right side of navbar */

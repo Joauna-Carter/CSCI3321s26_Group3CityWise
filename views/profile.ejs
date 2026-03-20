@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile - CityWise</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="nav-left">
+        <a href="/" class="logo">CityWise</a>
+    </div>
+
+    <div class="nav-right">
+        <a href="/profile"><%= username %></a>
+        <span class="divider">|</span>
+        <a href="/logout">Log Out</a>
+    </div>
+</header>
+
+<main class="home-container">
+
+    <section class="form-section">
+
+        <h1>User Profile</h1>
+
+        <p><strong>Username:</strong> <%= username %></p>
+
+    </section>
+
+</main>
+
+</body>
+</html>
