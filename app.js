@@ -1231,8 +1231,14 @@ app.get("/leaderboard", async function(req, res) {
 });
 
 // statistics
-app.get("/statistics", requireLogin, async function(req, res) {
+app.get("/statistics", async function(req, res) {
     try {
+        if (!req.session.user) {
+            return res.render("statistics", {
+                stats: null
+            });
+        }
+
         var userId = req.session.user.userId;
 
         var statRows = await db.query(`
@@ -1260,15 +1266,204 @@ app.get("/statistics", requireLogin, async function(req, res) {
     }
 });
 
-// admin
-app.get("/admin", requireAdmin, function(req, res) {
-    var content = "";
-    content += "<section class='hero'>";
-    content += "<h1>Admin Dashboard</h1>";
-    content += "<p>This page is reserved for admin tools such as managing cities, facts, page content, and questions.</p>";
-    content += "</section>";
+// admin dashboard
+app.get("/admin", requireAdmin, async function(req, res) {
+    try {
+        var selectedCityId = req.query.cityId || "";
 
-    res.send(renderPage(req, "Admin", content));
+        var countryRows = await db.query(`
+            SELECT
+                Countries.CountryID,
+                Countries.CountryName,
+                Regions.RegionName
+            FROM Countries
+            JOIN Regions ON Countries.RegionID = Regions.RegionID
+            ORDER BY Countries.CountryName
+        `);
+
+        var cityRows = await db.query(`
+            SELECT
+                Cities.CityID,
+                Cities.CityName,
+                Cities.Description,
+                Countries.CountryName,
+                Regions.RegionName
+            FROM Cities
+            JOIN Countries ON Cities.CountryID = Countries.CountryID
+            JOIN Regions ON Countries.RegionID = Regions.RegionID
+            ORDER BY Cities.CityName
+        `);
+
+        var selectedCity = null;
+        var selectedFacts = [];
+        var selectedPageContent = "";
+
+        if (selectedCityId) {
+            var selectedCityRows = await db.query(`
+                SELECT
+                    Cities.CityID,
+                    Cities.CityName,
+                    Cities.Description,
+                    Countries.CountryName,
+                    Regions.RegionName
+                FROM Cities
+                JOIN Countries ON Cities.CountryID = Countries.CountryID
+                JOIN Regions ON Countries.RegionID = Regions.RegionID
+                WHERE Cities.CityID = ?
+                LIMIT 1
+            `, [selectedCityId]);
+
+            if (selectedCityRows[0].length > 0) {
+                selectedCity = selectedCityRows[0][0];
+            }
+
+            var selectedFactRows = await db.query(`
+                SELECT
+                    FactID,
+                    FactType,
+                    FactSubtype,
+                    FactLabel,
+                    FactValue
+                FROM CityFacts
+                WHERE CityID = ?
+                ORDER BY FactType, FactSubtype, FactLabel
+            `, [selectedCityId]);
+
+            selectedFacts = selectedFactRows[0];
+
+            var pageRows = await db.query(`
+                SELECT PageContent
+                FROM CityPageContent
+                WHERE CityID = ?
+                LIMIT 1
+            `, [selectedCityId]);
+
+            if (pageRows[0].length > 0) {
+                selectedPageContent = pageRows[0][0].PageContent || "";
+            }
+        }
+
+        res.render("admin", {
+            countries: countryRows[0],
+            cities: cityRows[0],
+            selectedCity: selectedCity,
+            selectedFacts: selectedFacts,
+            selectedPageContent: selectedPageContent,
+            message: req.query.message || ""
+        });
+    } catch (err) {
+        console.error("Admin page error:", err);
+        res.status(500).send("Could not load admin dashboard.");
+    }
+});
+
+// add city
+app.post("/admin/cities/add", requireAdmin, async function(req, res) {
+    try {
+        var cityName = (req.body.cityName || "").trim();
+        var countryId = req.body.countryId || null;
+        var population = req.body.population || null;
+        var description = (req.body.description || "").trim() || null;
+        var latitude = req.body.latitude || null;
+        var longitude = req.body.longitude || null;
+        var cityImagePath = (req.body.cityImagePath || "").trim() || null;
+
+        if (!cityName || !countryId) {
+            return res.redirect("/admin?message=" + encodeURIComponent("City name and country are required."));
+        }
+
+        await db.query(`
+            INSERT INTO Cities
+            (CityName, CountryID, Population, Description, Latitude, Longitude, CityImagePath)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        `, [
+            cityName,
+            countryId,
+            population || null,
+            description,
+            latitude || null,
+            longitude || null,
+            cityImagePath
+        ]);
+
+        res.redirect("/admin?message=" + encodeURIComponent("City added successfully."));
+    } catch (err) {
+        console.error("Add city error:", err);
+        res.redirect("/admin?message=" + encodeURIComponent("Could not add city."));
+    }
+});
+
+// add fact
+app.post("/admin/facts/add", requireAdmin, async function(req, res) {
+    try {
+        var cityId = req.body.cityId || null;
+        var factType = (req.body.factType || "").trim();
+        var factSubtype = (req.body.factSubtype || "").trim();
+        var factLabel = (req.body.factLabel || "").trim();
+        var factValue = (req.body.factValue || "").trim();
+        var altAnswers = (req.body.altAnswers || "").trim() || null;
+        var factImageType = (req.body.factImageType || "").trim() || null;
+
+        if (!cityId || !factType || !factSubtype || !factLabel || !factValue) {
+            return res.redirect("/admin?message=" + encodeURIComponent("All fact fields except optional ones are required."));
+        }
+
+        await db.query(`
+            INSERT INTO CityFacts
+            (CityID, FactType, FactSubtype, FactLabel, FactValue, AltAnswers, FactImageType)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        `, [
+            cityId,
+            factType,
+            factSubtype,
+            factLabel,
+            factValue,
+            altAnswers,
+            factImageType
+        ]);
+
+        res.redirect("/admin?cityId=" + encodeURIComponent(cityId) + "&message=" + encodeURIComponent("Fact added successfully."));
+    } catch (err) {
+        console.error("Add fact error:", err);
+        res.redirect("/admin?message=" + encodeURIComponent("Could not add fact."));
+    }
+});
+
+// save city page content
+app.post("/admin/content/save", requireAdmin, async function(req, res) {
+    try {
+        var cityId = req.body.cityId || null;
+        var pageContent = req.body.pageContent || "";
+
+        if (!cityId) {
+            return res.redirect("/admin?message=" + encodeURIComponent("Please select a city."));
+        }
+
+        var existingRows = await db.query(`
+            SELECT CityPageContentID
+            FROM CityPageContent
+            WHERE CityID = ?
+            LIMIT 1
+        `, [cityId]);
+
+        if (existingRows[0].length > 0) {
+            await db.query(`
+                UPDATE CityPageContent
+                SET PageContent = ?, LastUpdated = CURRENT_TIMESTAMP
+                WHERE CityID = ?
+            `, [pageContent, cityId]);
+        } else {
+            await db.query(`
+                INSERT INTO CityPageContent (CityID, PageContent)
+                VALUES (?, ?)
+            `, [cityId, pageContent]);
+        }
+
+        res.redirect("/admin?cityId=" + encodeURIComponent(cityId) + "&message=" + encodeURIComponent("City page content saved."));
+    } catch (err) {
+        console.error("Save city page content error:", err);
+        res.redirect("/admin?message=" + encodeURIComponent("Could not save city page content."));
+    }
 });
 
 // test database route
