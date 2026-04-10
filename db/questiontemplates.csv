@@ -1,0 +1,45 @@
+Question Type,TemplateText,AnswerSource,RequiredFactType,RequiredFactSubtype,ImageSourceType
+MC,What country is {CityName} located in?,FactValue,QuickFact,General,NULL
+TF,True or False: {CityName} is located in {FactValue}.,FactValue,QuickFact,General,NULL
+FIB,{CityName} is located in ________.,FactValue,QuickFact,General,NULL
+MC,What is the approximate population of {CityName}?,FactValue,QuickFact,General,NULL
+FIB,The population of {CityName} is about ________.,FactValue,QuickFact,General,NULL
+TF,True or False: The population of {CityName} is around {FactValue}.,FactValue,QuickFact,General,NULL
+MC,What is the demonym (what people are called) of {CityName}?,FactValue,QuickFact,General,NULL
+FIB,A person from {CityName} is called a ________.,FactValue,QuickFact,General,NULL
+TF,True or False: People from {CityName} are called {FactValue}.,FactValue,QuickFact,General,NULL
+MC,What is the elevation of {CityName}?,FactValue,QuickFact,Geography,NULL
+FIB,The elevation of {CityName} is ________.,FactValue,QuickFact,Geography,NULL
+TF,True or False: {CityName} has an elevation of {FactValue}.,FactValue,QuickFact,Geography,NULL
+MC,{CityName} was named after what?,FactValue,QuickFact,Culture,NULL
+FIB,{CityName} was named after ________.,FactValue,QuickFact,Culture,NULL
+TF,True or False: {CityName} was named after {FactValue}.,FactValue,QuickFact,Culture,NULL
+MC,What is the official tree of {CityName}?,FactValue,QuickFact,Symbol,FactImage
+FIB,The official tree of {CityName} is ________.,FactValue,QuickFact,Symbol,FactImage
+TF,True or False: The official tree of {CityName} is {FactValue}.,FactValue,QuickFact,Symbol,FactImage
+MC,What is the official flower of {CityName}?,FactValue,QuickFact,Symbol,FactImage
+FIB,The official flower of {CityName} is ________.,FactValue,QuickFact,Symbol,FactImage
+TF,True or False: The official flower of {CityName} is {FactValue}.,FactValue,QuickFact,Symbol,FactImage
+MC,What is the official plant of {CityName}?,FactValue,QuickFact,Symbol,FactImage
+FIB,The official plant of {CityName} is ________.,FactValue,QuickFact,Symbol,FactImage
+TF,True or False: The official plant of {CityName} is {FactValue}.,FactValue,QuickFact,Symbol,FactImage
+MC,Which landmark in {CityName} is known for: {FactLabel}?,FactValue,FunFact,Landmark,FactImage
+FIB,"In {CityName}, ________ is known for: {FactLabel}.",FactValue,FunFact,Landmark,FactImage
+TF,True or False: {FactValue} is known for: {FactLabel}.,FactValue,FunFact,Landmark,FactImage
+MC,What is {CityName} known for: {FactLabel}?,FactValue,FunFact,Culture,NULL
+FIB,{CityName} is known for ________.,FactValue,FunFact,Culture,NULL
+TF,True or False: {CityName} is known for {FactLabel}.,FactValue,FunFact,Culture,NULL
+MC,What major event is {CityName} known for?,FactLabel,FunFact,Event,NULL
+FIB,{CityName} is known for ________.,FactLabel,FunFact,Event,NULL
+TF,True or False: {CityName} is known for {FactLabel}.,FactLabel,FunFact,Event,NULL
+MC,What is the nickname of {CityName}?,FactValue,QuickFact,Culture,NULL
+FIB,The nickname of {CityName} is ________.,FactValue,QuickFact,Culture,NULL
+TF,True or False: The nickname of {CityName} is {FactValue}.,FactValue,QuickFact,Culture,NULL
+MC,What is the motto of {CityName}?,FactValue,QuickFact,Culture,NULL
+FIB,The motto of {CityName} is ________.,FactValue,QuickFact,Culture,NULL
+TF,True or False: The motto of {CityName} is {FactValue}.,FactValue,QuickFact,Culture,NULL
+MC,When was {CityName} founded?,FactValue,QuickFact,History,NULL
+FIB,{CityName} was founded in ________.,FactValue,QuickFact,History,NULL
+TF,True or False: {CityName} was founded in {FactValue}.,FactValue,QuickFact,History,NULL
+MC,What country does this flag belong to for {CityName}?,Country,NULL,NULL,Flag
+MC,Which flag represents the country of {CityName}?,Country,NULL,NULL,Flag

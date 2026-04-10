@@ -25,7 +25,7 @@ CREATE TABLE Cities (
     Description TEXT NULL,
     Latitude DECIMAL(9,6) NULL,
     Longitude DECIMAL(9,6) NULL,
-    ImagePath VARCHAR(255) NULL,
+    CityImagePath VARCHAR(255) NULL,
     CONSTRAINT fk_cities_country
         FOREIGN KEY (CountryID) REFERENCES Countries(CountryID),
     CONSTRAINT uq_city_country UNIQUE (CityName, CountryID)
@@ -66,7 +66,17 @@ CREATE TABLE CityFacts (
     FactLabel VARCHAR(100) NOT NULL,
     FactValue TEXT NOT NULL,
     AltAnswers TEXT NULL,
+    FactImageType VARCHAR(50) NULL,
     CONSTRAINT fk_cityfacts_city
+        FOREIGN KEY (CityID) REFERENCES Cities(CityID)
+);
+
+CREATE TABLE CityPageContent (
+    CityPageContentID INT AUTO_INCREMENT PRIMARY KEY,
+    CityID INT NOT NULL UNIQUE,
+    PageContent LONGTEXT NULL,
+    LastUpdated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_citypagecontent_city
         FOREIGN KEY (CityID) REFERENCES Cities(CityID)
 );
 
@@ -77,8 +87,27 @@ CREATE TABLE QuestionTemplates (
     AnswerSource VARCHAR(50) NOT NULL,
     RequiredFactType VARCHAR(50) NULL,
     RequiredFactSubtype VARCHAR(50) NULL,
-    ImageType VARCHAR(50) NULL,
+    ImageSourceType VARCHAR(50) NULL,
     CONSTRAINT chk_templates_qtype
+        CHECK (QuestionType IN ('MC', 'TF', 'FB'))
+);
+
+CREATE TABLE CustomQuestions (
+    CustomQuestionID INT AUTO_INCREMENT PRIMARY KEY,
+    CityID INT NOT NULL,
+    QuestionType VARCHAR(10) NOT NULL,
+    QuestionText TEXT NOT NULL,
+    CorrectAnswer TEXT NOT NULL,
+    WrongAnswer1 TEXT NULL,
+    WrongAnswer2 TEXT NULL,
+    WrongAnswer3 TEXT NULL,
+    Explanation TEXT NULL,
+    Difficulty VARCHAR(20) NULL,
+    IsActive BOOLEAN NOT NULL DEFAULT TRUE,
+    ImagePath VARCHAR(255) NULL,
+    CONSTRAINT fk_customquestions_city
+        FOREIGN KEY (CityID) REFERENCES Cities(CityID),
+    CONSTRAINT chk_customquestions_qtype
         CHECK (QuestionType IN ('MC', 'TF', 'FB'))
 );
 
@@ -119,7 +148,8 @@ CREATE TABLE QuizAttemptCities (
 CREATE TABLE QuizAttemptQuestions (
     QuizAttemptQuestionID INT AUTO_INCREMENT PRIMARY KEY,
     QuizAttemptID INT NOT NULL,
-    TemplateID INT NOT NULL,
+    TemplateID INT NULL,
+    CustomQuestionID INT NULL,
     CityID INT NOT NULL,
     QuestionText TEXT NOT NULL,
     CorrectAnswer TEXT NOT NULL,
@@ -129,6 +159,8 @@ CREATE TABLE QuizAttemptQuestions (
         FOREIGN KEY (QuizAttemptID) REFERENCES QuizAttempts(QuizAttemptID),
     CONSTRAINT fk_quizattemptquestions_template
         FOREIGN KEY (TemplateID) REFERENCES QuestionTemplates(TemplateID),
+    CONSTRAINT fk_quizattemptquestions_custom
+        FOREIGN KEY (CustomQuestionID) REFERENCES CustomQuestions(CustomQuestionID),
     CONSTRAINT fk_quizattemptquestions_city
         FOREIGN KEY (CityID) REFERENCES Cities(CityID)
 );

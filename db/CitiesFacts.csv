@@ -1,0 +1,29 @@
+CityID,FactType,FactSubtype,FactLabel,FactValue,AltAnswers,FactImageType
+1,QuickFact,General,Country,United States,USA;US,NULL
+1,QuickFact,General,Population,"3,898,747",3.9 million,NULL
+1,QuickFact,General,Demonym,Angeleno,Angelino,NULL
+1,QuickFact,Geography,Elevation,233 ft,71 m,NULL
+1,QuickFact,Culture,Named After,"Our Lady, Queen of the Angels",NULL,NULL
+1,QuickFact,Symbol,Official Tree,Coral Tree (Erythrina afra),Coral tree,https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Erythrina_Caffra_flower.JPG/1280px-Erythrina_Caffra_flower.JPG
+1,QuickFact,Symbol,Official Flower,Bird of Paradise (Strelitzia reginae),Bird of Paradise,https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Raggiana_Bird-of-Paradise_wild_5.jpg/500px-Raggiana_Bird-of-Paradise_wild_5.jpg
+1,QuickFact,Symbol,Official Plant,Toyon (Heteromeles arbutifolia),Toyon plant,https://calscape.org/storage/app/species_images/calphotos/images/0000_0000_0113_2069.jpeg
+1,FunFact,Landmark,"Contains over 2,600 stars",Hollywood Walk of Fame,2600 stars,https://www.californiabeaches.com/wp-content/uploads/2016/06/hollywood-walk-of-fame-60601.jpg
+1,FunFact,Landmark,Largest Ice Age fossil site in the world,La Brea Tar Pits,NULL,https://allosaurusroar.com/wp-content/uploads/2016/06/la-brea-museum-elephants.jpg
+1,FunFact,Event,Only North American city to host the Olympics twice,Los Angeles,Olympics,
+1,FunFact,Landmark,Theme park and real working film studio,Universal Studios Hollywood,Universal Studios,https://www.thegarland.com/images/hero/small/ush-globe-header.jpg
+1,FunFact,Culture,Largest historic theatre district on the National Register of Historic Places,Los Angeles,Historic Theatre District,https://loveseatown.com/app/uploads/2025/01/historic-theatre-district-202501-paramount-theatre-4x3-v1.jpg
+2,QuickFact,General,Country,Mexico,NULL,NULL
+2,QuickFact,General,Population,"9,209,944",9.2 million,NULL
+2,QuickFact,General,Demonym,Capitalino,Chilango,NULL
+2,QuickFact,Geography,Elevation,"2,240 m","7,350 ft",NULL
+2,QuickFact,Culture,Nickname,La Ciudad de los Palacios,City of Palaces,NULL
+2,QuickFact,Culture,Motto,Capital de la transformación,Capital of the transformation,NULL
+2,QuickFact,History,Founded,1325,Tenochtitlan,NULL
+2,QuickFact,Status,Capital of Mexico,Mexico City,Capital city,NULL
+2,FunFact,Geography,Most populous city in North America,Mexico City,NULL,NULL
+2,FunFact,Landmark,Largest urban park in Latin America,Chapultepec Park,Bosque de Chapultepec,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjpjdyI5ZDr3I0PtWdVPf_1UIZLajGn9DKHA&s
+2,FunFact,Culture,Known for Aztec and colonial architecture,Historic Center of Mexico City,NULL,https://lifeontheroam.com/wp-content/uploads/2023/07/Palace-of-Fine-Arts-Mexico-City-Historic-Centre-t-min.webp
+2,FunFact,Culture,Second most museums in the world,Mexico City,2nd most museums,NULL
+2,FunFact,Religion,Second most visited Catholic shrine,Basilica of Guadalupe,NULL,https://mexiconewsdaily.com/wp-content/uploads/2025/12/NB.jpg
+2,FunFact,Landmark,Only royal castle in the Americas,Chapultepec Castle,NULL,https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Castillo-de-chapultepec.jpg/250px-Castillo-de-chapultepec.jpg
+2,FunFact,Landmark,Monument celebrating Mexico’s independence,Angel of Independence,El Ángel,https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Victoria_Alada_de_la_Columna_de_la_Independencia_01.jpg/250px-Victoria_Alada_de_la_Columna_de_la_Independencia_01.jpg

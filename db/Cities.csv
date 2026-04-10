@@ -1,0 +1,11 @@
+CityName,CountryID,Population,Description,Latitude,Longitude,CityImagePath
+Los Angeles,1,3898747,"Major U.S. city known for Hollywood, entertainment, beaches, and culture",34.05,-118.25,https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Los_Angeles_with_Mount_Baldy.jpg/960px-Los_Angeles_with_Mount_Baldy.jpg
+Mexico City,3,9209944,"Capital and largest city of Mexico, known for rich history, Aztec origins, and cultural landmarks",19.43,-99.13,https://content.presspage.com/uploads/2278/3fa93fbb-a0df-4b70-9d4b-6591f5afd01f/1920_adobestock-192337612.jpeg?10000
+Paris,10,,,,,
+Rome,12,,,,,
+Seoul,41,,,,,
+Rio de Janeiro,7,,,,,
+Buenos Aires,8,,,,,
+Cairo,43,,,,,
+Cape Town,20,,,,,
+Melbourne,19,,,,,
