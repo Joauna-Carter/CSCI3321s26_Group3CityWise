@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= city.CityName %> - CityWise</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-left">
+            <a href="/" class="logo">CityWise</a>
+        </div>
+
+        <div class="nav-center">
+            <a href="/" class="nav-tab">Home</a>
+            <a href="/cities" class="nav-tab">City Trivia</a>
+            <a href="/study" class="nav-tab">Study &amp; Quiz</a>
+            <a href="/map" class="nav-tab">Map</a>
+            <a href="/leaderboard" class="nav-tab">Leaderboard</a>
+            <a href="/statistics" class="nav-tab">Statistics</a>
+
+            <% if (isAdmin) { %>
+                <a href="/admin" class="nav-tab">Admin</a>
+            <% } %>
+        </div>
+
+        <div class="nav-right">
+            <% if (!isLoggedIn) { %>
+                <a href="/register">Create Account</a>
+                <span class="divider">|</span>
+                <a href="/login">Log In</a>
+            <% } else { %>
+                <a href="/profile"><%= username %></a>
+                <span class="divider">|</span>
+                <a href="/logout">Log Out</a>
+            <% } %>
+        </div>
+    </header>
+
+    <main class="home-container">
+
+        <section class="hero">
+            <h1><%= city.CityName %>, <%= city.CountryName %></h1>
+
+            <% if (city.Description) { %>
+                <p><%= city.Description %></p>
+            <% } else { %>
+                <p>No description is available for this city yet.</p>
+            <% } %>
+
+            <div class="home-actions">
+                <a href="/quiz/start?cityId=<%= city.CityID %>&difficulty=easy&timed=0" class="home-button">Start Quiz</a>
+                <a href="/flashcards/start?cityId=<%= city.CityID %>" class="home-button">Study Flashcards</a>
+            </div>
+        </section>
+
+        <section class="home-info">
+            <h2>City Overview</h2>
+
+            <div class="city-grid">
+                <div class="city-card">
+                    <h3>Country</h3>
+                    <p><%= city.CountryName %></p>
+                </div>
+
+                <div class="city-card">
+                    <h3>Region</h3>
+                    <p><%= city.RegionName %></p>
+                </div>
+
+                <div class="city-card">
+                    <h3>Population</h3>
+                    <p>
+                        <% if (city.Population) { %>
+                            <%= city.Population %>
+                        <% } else { %>
+                            Not available yet
+                        <% } %>
+                    </p>
+                </div>
+
+                <div class="city-card">
+                    <h3>Location</h3>
+                    <p>
+                        <% if (city.Latitude && city.Longitude) { %>
+                            <%= city.Latitude %>, <%= city.Longitude %>
+                        <% } else { %>
+                            Coordinates not available yet
+                        <% } %>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="home-info">
+            <h2>Quick Facts</h2>
+
+            <% if (quickFacts && quickFacts.length > 0) { %>
+                <div class="city-grid">
+                    <% quickFacts.forEach(function(fact) { %>
+                        <div class="city-card">
+                            <h3><%= fact.FactLabel %></h3>
+                            <p><%= fact.FactValue %></p>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <p>No quick facts are available for this city yet.</p>
+            <% } %>
+        </section>
+
+        <section class="home-info">
+            <h2>Fun Facts and Trivia</h2>
+
+            <% if (funFacts && funFacts.length > 0) { %>
+                <div class="city-grid">
+                    <% funFacts.forEach(function(fact) { %>
+                        <div class="city-card">
+                            <h3><%= fact.FactLabel %></h3>
+                            <p><%= fact.FactValue %></p>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <p>No fun facts are available for this city yet.</p>
+            <% } %>
+        </section>
+
+        <% if (pageContent) { %>
+            <section class="home-info">
+                <h2>Extra City Page Content</h2>
+                <div class="city-card">
+                    <%- pageContent %>
+                </div>
+            </section>
+        <% } %>
+
+        <section class="home-info">
+            <h2>Keep Learning</h2>
+
+            <div class="home-actions">
+                <a href="/quiz/start?cityId=<%= city.CityID %>&difficulty=easy&timed=0" class="home-button">Start Quiz</a>
+                <a href="/flashcards/start?cityId=<%= city.CityID %>" class="home-button">Study Flashcards</a>
+                <a href="/cities" class="home-button">Back to City Trivia</a>
+            </div>
+        </section>
+
+    </main>
+
+</body>
+</html>

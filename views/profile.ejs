@@ -2,34 +2,58 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile - CityWise</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
-<header class="navbar">
-    <div class="nav-left">
-        <a href="/" class="logo">CityWise</a>
-    </div>
+    <header class="navbar">
+        <div class="nav-left">
+            <a href="/" class="logo">CityWise</a>
+        </div>
 
-    <div class="nav-right">
-        <a href="/profile"><%= username %></a>
-        <span class="divider">|</span>
-        <a href="/logout">Log Out</a>
-    </div>
-</header>
+        <div class="nav-center">
+            <a href="/" class="nav-tab">Home</a>
+            <a href="/cities" class="nav-tab">City Trivia</a>
+            <a href="/study" class="nav-tab">Study &amp; Quiz</a>
+            <a href="/map" class="nav-tab">Map</a>
+            <a href="/leaderboard" class="nav-tab">Leaderboard</a>
+            <a href="/statistics" class="nav-tab">Statistics</a>
 
-<main class="home-container">
+            <% if (isAdmin) { %>
+                <a href="/admin" class="nav-tab">Admin</a>
+            <% } %>
+        </div>
 
-    <section class="form-section">
+        <div class="nav-right">
+            <a href="/profile"><%= username %></a>
+            <span class="divider">|</span>
+            <a href="/logout">Log Out</a>
+        </div>
+    </header>
 
-        <h1>User Profile</h1>
+    <main class="home-container">
 
-        <p><strong>Username:</strong> <%= username %></p>
+        <section class="form-section">
+            <h1>User Profile</h1>
 
-    </section>
+            <p><strong>Username:</strong> <%= username %></p>
 
-</main>
+            <% if (stats) { %>
+                <p><strong>Quizzes Completed:</strong> <%= stats.QuizzesCompleted %></p>
+                <p><strong>Average Score:</strong> <%= stats.AverageScore %></p>
+                <p><strong>Best Score:</strong> <%= stats.BestScore %></p>
+                <p><strong>Total Quiz Points:</strong> <%= stats.TotalQuizPoints %></p>
+                <p><strong>Flashcard Sessions Used:</strong> <%= stats.FlashcardSessionsUsed %></p>
+                <p><strong>Most Used Quiz Mode:</strong> <%= stats.MostDoneQuizMode || "N/A" %></p>
+                <p><strong>Last Quiz Attempted:</strong> <%= stats.LastQuizAttemptedAt || "N/A" %></p>
+            <% } else { %>
+                <p>No profile statistics are available yet.</p>
+            <% } %>
+        </section>
+
+    </main>
 
 </body>
 </html>

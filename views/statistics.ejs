@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics - CityWise</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-left">
+            <a href="/" class="logo">CityWise</a>
+        </div>
+
+        <div class="nav-center">
+            <a href="/" class="nav-tab">Home</a>
+            <a href="/cities" class="nav-tab">City Trivia</a>
+            <a href="/study" class="nav-tab">Study &amp; Quiz</a>
+            <a href="/map" class="nav-tab">Map</a>
+            <a href="/leaderboard" class="nav-tab">Leaderboard</a>
+            <a href="/statistics" class="nav-tab">Statistics</a>
+
+            <% if (isAdmin) { %>
+                <a href="/admin" class="nav-tab">Admin</a>
+            <% } %>
+        </div>
+
+        <div class="nav-right">
+            <% if (!isLoggedIn) { %>
+                <a href="/register">Create Account</a>
+                <span class="divider">|</span>
+                <a href="/login">Log In</a>
+            <% } else { %>
+                <a href="/profile"><%= username %></a>
+                <span class="divider">|</span>
+                <a href="/logout">Log Out</a>
+            <% } %>
+        </div>
+    </header>
+
+    <main class="home-container">
+
+        <section class="hero">
+            <h1>Statistics</h1>
+            <p>Track your quiz and flashcard progress.</p>
+        </section>
+
+        <section class="home-info">
+            <% if (!stats) { %>
+                <p>No statistics are available yet.</p>
+            <% } else { %>
+                <div class="city-grid">
+                    <div class="city-card">
+                        <h3>Quizzes Completed</h3>
+                        <p><%= stats.QuizzesCompleted %></p>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Average Score</h3>
+                        <p><%= stats.AverageScore %></p>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Best Score</h3>
+                        <p><%= stats.BestScore %></p>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Total Quiz Points</h3>
+                        <p><%= stats.TotalQuizPoints %></p>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Flashcard Sessions Used</h3>
+                        <p><%= stats.FlashcardSessionsUsed %></p>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Most Used Quiz Mode</h3>
+                        <p><%= stats.MostDoneQuizMode || "N/A" %></p>
+                    </div>
+                </div>
+
+                <div class="city-card" style="margin-top: 20px;">
+                    <p><strong>Last Quiz Attempted:</strong> <%= stats.LastQuizAttemptedAt || "N/A" %></p>
+                </div>
+            <% } %>
+        </section>
+
+    </main>
+
+</body>
+</html>

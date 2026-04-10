@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map - CityWise</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        crossorigin=""
+    >
+    <style>
+        #city-map {
+            width: 100%;
+            height: 500px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-left">
+            <a href="/" class="logo">CityWise</a>
+        </div>
+
+        <div class="nav-center">
+            <a href="/" class="nav-tab">Home</a>
+            <a href="/cities" class="nav-tab">City Trivia</a>
+            <a href="/study" class="nav-tab">Study &amp; Quiz</a>
+            <a href="/map" class="nav-tab">Map</a>
+            <a href="/leaderboard" class="nav-tab">Leaderboard</a>
+            <a href="/statistics" class="nav-tab">Statistics</a>
+
+            <% if (isAdmin) { %>
+                <a href="/admin" class="nav-tab">Admin</a>
+            <% } %>
+        </div>
+
+        <div class="nav-right">
+            <% if (!isLoggedIn) { %>
+                <a href="/register">Create Account</a>
+                <span class="divider">|</span>
+                <a href="/login">Log In</a>
+            <% } else { %>
+                <a href="/profile"><%= username %></a>
+                <span class="divider">|</span>
+                <a href="/logout">Log Out</a>
+            <% } %>
+        </div>
+    </header>
+
+    <main class="home-container">
+
+        <section class="hero">
+            <h1>Map</h1>
+            <p>Click a city marker to open that city’s trivia page.</p>
+        </section>
+
+        <section class="home-info">
+            <% if (!cities || cities.length === 0) { %>
+                <p>No cities with coordinates are available yet.</p>
+            <% } else { %>
+                <div id="city-map"></div>
+            <% } %>
+        </section>
+
+    </main>
+
+    <% if (cities && cities.length > 0) { %>
+        <script
+            src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            crossorigin=""
+        ></script>
+        <script>
+            var map = L.map("city-map").setView([20, 0], 2);
+
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                maxZoom: 18,
+                attribution: "&copy; OpenStreetMap contributors"
+            }).addTo(map);
+
+            var cities = <%- JSON.stringify(cities) %>;
+            var bounds = [];
+
+            cities.forEach(function(city) {
+                if (city.Latitude && city.Longitude) {
+                    var lat = parseFloat(city.Latitude);
+                    var lng = parseFloat(city.Longitude);
+
+                    var marker = L.marker([lat, lng]).addTo(map);
+                    marker.bindPopup(
+                        "<strong>" + city.CityName + "</strong><br>" +
+                        "<a href='/cities/" + city.CityID + "'>Go to trivia page</a>"
+                    );
+
+                    marker.on("click", function() {
+                        marker.openPopup();
+                    });
+
+                    bounds.push([lat, lng]);
+                }
+            });
+
+            if (bounds.length > 0) {
+                map.fitBounds(bounds, { padding: [30, 30] });
+            }
+        </script>
+    <% } %>
+
+</body>
+</html>

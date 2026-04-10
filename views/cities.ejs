@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CityWise</title>
+    <title>City Trivia - CityWise</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -40,45 +40,41 @@
     </header>
 
     <main class="home-container">
+
         <section class="hero">
-            <h1>Welcome to CityWise</h1>
-
-            <p>
-                Explore cities around the world, learn interesting facts, study with flashcards,
-                and test your knowledge with trivia quizzes.
-            </p>
-
-            <div class="home-actions">
-                <a href="/cities" class="home-button">Browse City Trivia</a>
-                <a href="/study" class="home-button">Start Study &amp; Quiz</a>
-            </div>
+            <h1>City Trivia</h1>
+            <p>Browse all available cities and open each city page to learn more.</p>
         </section>
 
         <section class="home-info">
-            <h2>What You Can Do</h2>
+            <% if (!cities || cities.length === 0) { %>
+                <p>No cities are available yet.</p>
+            <% } else { %>
+                <div class="city-grid">
+                    <% cities.forEach(function(city) { %>
+                        <div class="city-card">
+                            <h3>
+                                <a href="/cities/<%= city.CityID %>"><%= city.CityName %></a>
+                            </h3>
 
-            <div class="city-grid">
-                <div class="city-card">
-                    <h3>Browse Cities</h3>
-                    <p>Open city trivia pages to learn descriptions, quick facts, locations, and fun trivia.</p>
-                </div>
+                            <p><strong>Country:</strong> <%= city.CountryName %></p>
+                            <p><strong>Region:</strong> <%= city.RegionName %></p>
 
-                <div class="city-card">
-                    <h3>Study &amp; Quiz</h3>
-                    <p>Choose a city, region, or random mode to study with flashcards or take a quiz.</p>
-                </div>
+                            <% if (city.Description) { %>
+                                <p><%= city.Description %></p>
+                            <% } else { %>
+                                <p>No description available yet.</p>
+                            <% } %>
 
-                <div class="city-card">
-                    <h3>Explore the Map</h3>
-                    <p>Use the map page to explore city locations and jump directly to city trivia pages.</p>
+                            <p>
+                                <a href="/cities/<%= city.CityID %>">View City Page</a>
+                            </p>
+                        </div>
+                    <% }) %>
                 </div>
-
-                <div class="city-card">
-                    <h3>Track Progress</h3>
-                    <p>View leaderboard rankings and personal statistics as you complete quizzes.</p>
-                </div>
-            </div>
+            <% } %>
         </section>
+
     </main>
 
 </body>

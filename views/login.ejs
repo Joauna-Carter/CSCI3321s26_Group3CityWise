@@ -2,37 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log In - CityWise</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
-<header class="navbar">
-    <div class="nav-left">
-        <a href="/" class="logo">CityWise</a>
-    </div>
-</header>
+    <header class="navbar">
+        <div class="nav-left">
+            <a href="/" class="logo">CityWise</a>
+        </div>
 
-<main class="home-container">
+        <div class="nav-center">
+            <a href="/" class="nav-tab">Home</a>
+            <a href="/cities" class="nav-tab">City Trivia</a>
+            <a href="/study" class="nav-tab">Study &amp; Quiz</a>
+            <a href="/map" class="nav-tab">Map</a>
+            <a href="/leaderboard" class="nav-tab">Leaderboard</a>
+            <a href="/statistics" class="nav-tab">Statistics</a>
+        </div>
 
-    <section class="form-section">
-        <h1>Log In</h1>
+        <div class="nav-right">
+            <a href="/register">Create Account</a>
+            <span class="divider">|</span>
+            <a href="/login">Log In</a>
+        </div>
+    </header>
 
-        <form action="/login" method="POST" class="account-form">
+    <main class="home-container">
 
-            <label>Username</label>
-            <input type="text" name="username">
+        <section class="form-section">
+            <h1>Log In</h1>
 
-            <label>Password</label>
-            <input type="password" name="password">
+            <form action="/login" method="POST" class="account-form">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
 
-            <button type="submit">Log In</button>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
 
-        </form>
+                <button type="submit">Log In</button>
+            </form>
 
-    </section>
+            <p>Need an account? <a href="/register">Create one here</a>.</p>
+        </section>
 
-</main>
+    </main>
 
 </body>
 </html>
