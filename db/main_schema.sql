@@ -80,6 +80,34 @@ CREATE TABLE CityPageContent (
         FOREIGN KEY (CityID) REFERENCES Cities(CityID)
 );
 
+CREATE TABLE CityPageRevisions (
+    RevisionID INT AUTO_INCREMENT PRIMARY KEY,
+    CityID INT NOT NULL,
+    EditedByUserID INT NULL,
+    PageContent LONGTEXT NOT NULL,
+    EditSummary VARCHAR(255) NULL,
+    CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_citypagerevisions_city
+        FOREIGN KEY (CityID) REFERENCES Cities(CityID),
+    CONSTRAINT fk_citypagerevisions_user
+        FOREIGN KEY (EditedByUserID) REFERENCES Users(UserID),
+    INDEX idx_citypagerevisions_cityid_createdat (CityID, CreatedAt)
+);
+
+CREATE TABLE CityPageImages (
+    CityPageImageID INT AUTO_INCREMENT PRIMARY KEY,
+    CityID INT NOT NULL,
+    ImagePath VARCHAR(255) NOT NULL,
+    AltText VARCHAR(255) NULL,
+    Caption VARCHAR(255) NULL,
+    UploadedByUserID INT NULL,
+    UploadedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_citypageimages_city
+        FOREIGN KEY (CityID) REFERENCES Cities(CityID),
+    CONSTRAINT fk_citypageimages_user
+        FOREIGN KEY (UploadedByUserID) REFERENCES Users(UserID)
+);
+
 CREATE TABLE QuestionTemplates (
     TemplateID INT AUTO_INCREMENT PRIMARY KEY,
     QuestionType VARCHAR(10) NOT NULL,

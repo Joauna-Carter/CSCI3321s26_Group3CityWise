@@ -43,47 +43,99 @@
 
         <section class="hero">
             <h1>Statistics</h1>
-            <p>Track your quiz and flashcard progress.</p>
+            <p>View website statistics and your personal progress.</p>
         </section>
 
         <section class="home-info">
-            <% if (!stats) { %>
-                <p>No statistics are available yet.</p>
+            <h2>Website Statistics</h2>
+
+            <% if (!websiteStats) { %>
+                <p>No website statistics are available yet.</p>
+            <% } else { %>
+                <div class="city-grid">
+                    <div class="city-card">
+                        <h3>Total Users</h3>
+                        <p><%= websiteStats.TotalUsers %></p>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Total Admins</h3>
+                        <p><%= websiteStats.TotalAdmins %></p>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Total Regular Users</h3>
+                        <p><%= websiteStats.TotalRegularUsers %></p>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Total Quizzes Completed</h3>
+                        <p><%= websiteStats.TotalQuizzesCompleted %></p>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Average Quiz Score</h3>
+                        <p><%= Number(websiteStats.AverageQuizScore || 0).toFixed(2) %></p>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Highest Quiz Score</h3>
+                        <p><%= websiteStats.HighestQuizScore %></p>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Most Popular Quiz Mode</h3>
+                        <p><%= websiteStats.MostPopularQuizMode || "None" %></p>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Total Flashcard Sessions</h3>
+                        <p><%= websiteStats.TotalFlashcardSessions %></p>
+                    </div>
+                </div>
+            <% } %>
+        </section>
+
+        <section class="home-info" style="margin-top: 30px;">
+            <h2>Your Statistics</h2>
+
+            <% if (!userStats) { %>
+                <p>Log in to view your personal statistics.</p>
             <% } else { %>
                 <div class="city-grid">
                     <div class="city-card">
                         <h3>Quizzes Completed</h3>
-                        <p><%= stats.QuizzesCompleted %></p>
+                        <p><%= userStats.QuizzesCompleted %></p>
                     </div>
 
                     <div class="city-card">
                         <h3>Average Score</h3>
-                        <p><%= stats.AverageScore %></p>
+                        <p><%= Number(userStats.AverageScore || 0).toFixed(2) %></p>
                     </div>
 
                     <div class="city-card">
                         <h3>Best Score</h3>
-                        <p><%= stats.BestScore %></p>
+                        <p><%= userStats.BestScore %></p>
                     </div>
 
                     <div class="city-card">
                         <h3>Total Quiz Points</h3>
-                        <p><%= stats.TotalQuizPoints %></p>
+                        <p><%= userStats.TotalQuizPoints %></p>
                     </div>
 
                     <div class="city-card">
                         <h3>Flashcard Sessions Used</h3>
-                        <p><%= stats.FlashcardSessionsUsed %></p>
+                        <p><%= userStats.FlashcardSessionsUsed %></p>
                     </div>
 
                     <div class="city-card">
                         <h3>Most Used Quiz Mode</h3>
-                        <p><%= stats.MostDoneQuizMode || "N/A" %></p>
+                        <p><%= userStats.MostDoneQuizMode || "N/A" %></p>
                     </div>
                 </div>
 
                 <div class="city-card" style="margin-top: 20px;">
-                    <p><strong>Last Quiz Attempted:</strong> <%= stats.LastQuizAttemptedAt || "N/A" %></p>
+                    <p><strong>Last Quiz Attempted:</strong> <%= userStats.LastQuizAttemptedAt || "N/A" %></p>
                 </div>
             <% } %>
         </section>

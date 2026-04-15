@@ -1,5 +1,5 @@
 CityID,FactType,FactSubtype,FactLabel,FactValue,AltAnswers,FactImageType
-1,QuickFact,General,Country,United States,USA;US,NULL
+1,QuickFact,General,Country,United States,USA;US;United States of America,NULL
 1,QuickFact,General,Population,"3,898,747",3.9 million,NULL
 1,QuickFact,General,Demonym,Angeleno,Angelino,NULL
 1,QuickFact,Geography,Elevation,233 ft,71 m,NULL
