@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= tableName %> - Admin</title>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <style>
+    main {
+      padding: 20px;
+    }
+
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      vertical-align: top;
+      white-space: normal;
+      word-wrap: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    th {
+      background: #f4f4f4;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      padding: 6px;
+      resize: vertical;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    textarea {
+      min-height: 70px;
+    }
+
+    input:disabled,
+    textarea:disabled {
+      background: #f3f4f6;
+      color: #333;
+      font-weight: bold;
+      border: none;
+    }
+
+    .id-display {
+      font-size: 12px;
+      color: #555;
+      margin-top: 4px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .save-btn {
+      background: #28a745;
+      color: white;
+    }
+
+    .delete-btn {
+      background: #dc3545;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="navbar">
+  <a href="/admin">Back to Admin</a>
+</header>
+
+<main>
+
+<h1><%= tableName %></h1>
+
+<div class="table-wrapper">
+<table>
+  <thead>
+    <tr>
+      <% if (rows.length > 0) { %>
+        <% Object.keys(rows[0]).forEach(function(col) { %>
+          <% if (!col.endsWith("_Display")) { %>
+            <th><%= col %></th>
+          <% } %>
+        <% }) %>
+        <th>Actions</th>
+      <% } %>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% rows.forEach(function(row) { %>
+      <tr>
+        <form method="POST" action="/admin/database/<%= tableSlug %>/update/<%= row[primaryKey] %>">
+
+          <% Object.keys(row).forEach(function(col) { %>
+            <% if (!col.endsWith("_Display")) { %>
+              <td>
+                <% 
+                  var isIdColumn = col.endsWith("ID");
+                  var displayCol = col + "_Display";
+                  var displayValue = row[displayCol];
+                  var value = row[col] !== null ? row[col] : "";
+                  var isLongText = String(value).length > 50;
+                %>
+
+                <% if (isIdColumn) { %>
+                  <input 
+                    type="text"
+                    name="<%= col %>"
+                    value="<%= value %>"
+                    disabled
+                  >
+
+                  <% if (displayValue) { %>
+                    <div class="id-display">
+                      <strong>Matches:</strong> <%= displayValue %>
+                    </div>
+                  <% } %>
+
+                <% } else if (isLongText) { %>
+                  <textarea name="<%= col %>"><%= value %></textarea>
+
+                <% } else { %>
+                  <input 
+                    type="text"
+                    name="<%= col %>"
+                    value="<%= value %>"
+                  >
+                <% } %>
+              </td>
+            <% } %>
+          <% }) %>
+
+          <td class="actions">
+            <button class="save-btn" type="submit">Save</button>
+        </form>
+
+        <form method="POST" action="/admin/database/<%= tableSlug %>/delete/<%= row[primaryKey] %>">
+            <button class="delete-btn" type="submit">Delete</button>
+        </form>
+          </td>
+
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+</div>
+
+</main>
+
+</body>
+</html>

@@ -1,3 +1,5 @@
+// studyRoutes.js
+
 var express = require("express");
 var router = express.Router();
 var db = require("../db/connection");
@@ -89,8 +91,20 @@ router.get("/quiz/start", async function(req, res) {
         });
 
         var facts = await quizHelpers.getFactsForCities(cityIds);
+        var allFacts = await quizHelpers.getAllFactsForChoices();
+        var allCities = await quizHelpers.getAllCitiesForChoices();
         var templates = await quizHelpers.getQuestionTemplates();
-        var questions = quizHelpers.generateQuizQuestions(selectedCities, facts, templates, difficulty);
+
+        var questions = quizHelpers.generateQuizQuestions(
+            selectedCities,
+            facts,
+            templates,
+            difficulty,
+            allFacts,
+            allCities
+        );
+
+        var timing = quizHelpers.getQuizTiming(difficulty);
 
         if (questions.length === 0) {
             return res.send(renderPage(req, "Quiz", "<p>Not enough facts/templates are available to generate quiz questions yet.</p><p><a href='/study'>Go back</a></p>"));
@@ -103,7 +117,13 @@ router.get("/quiz/start", async function(req, res) {
             difficulty: difficulty,
             timed: timed,
             selectedCities: selectedCities,
-            questions: questions
+            questions: questions,
+            currentIndex: 0,
+            gradedQuestions: [],
+            totalPoints: 0,
+            correctCount: 0,
+            timing: timing,
+            questionStartedAt: Date.now()
         };
 
         res.redirect("/quiz");
@@ -113,7 +133,7 @@ router.get("/quiz/start", async function(req, res) {
     }
 });
 
-// show current quiz
+// show current quiz question
 router.get("/quiz", function(req, res) {
     var quiz = req.session.currentQuiz;
 
@@ -121,85 +141,231 @@ router.get("/quiz", function(req, res) {
         return res.send(renderPage(req, "Quiz", "<p>No quiz is active right now.</p><p><a href='/study'>Go to Study &amp; Quiz</a></p>"));
     }
 
+    var index = quiz.currentIndex || 0;
+
+    if (index >= quiz.questions.length) {
+        return res.redirect("/quiz/results");
+    }
+
+    var question = quiz.questions[index];
+    var secondsPerQuestion = quiz.timing ? quiz.timing.secondsPerQuestion : 30;
+
+    quiz.questionStartedAt = Date.now();
+
     var content = "";
+
     content += "<section class='hero'>";
     content += "<h1>Trivia Quiz</h1>";
+    content += "<p><strong>Question:</strong> " + (index + 1) + " / " + quiz.questions.length + "</p>";
     content += "<p><strong>Difficulty:</strong> " + escapeHtml(quiz.difficulty) + "</p>";
-    content += "<p><strong>Timed:</strong> " + (quiz.timed ? "Yes" : "No") + "</p>";
+    content += "<p><strong>Score:</strong> " + quiz.totalPoints + " points</p>";
+
+    if (quiz.timed) {
+        content += "<p><strong>Time Left:</strong> <span id='quiz-timer'></span></p>";
+        content += "<p>Answer faster to earn more points.</p>";
+    }
+
     content += "</section>";
 
     content += "<section class='cities-section'>";
-    content += "<form method='POST' action='/quiz/submit'>";
+    content += "<form id='quiz-form' method='POST' action='/quiz/answer'>";
 
-    quiz.questions.forEach(function(question, index) {
-        content += "<div class='city-card'>";
-        content += "<p><strong>Question " + (index + 1) + ":</strong> " + escapeHtml(question.questionText) + "</p>";
+    content += "<div class='city-card'>";
+    content += "<p><strong>" + escapeHtml(question.questionText) + "</strong></p>";
 
-        if (question.questionType === "MC" || question.questionType === "TF") {
-            question.choices.forEach(function(choice, choiceIndex) {
-                var choiceId = "q_" + index + "_" + choiceIndex;
-                content += "<p>";
-                content += "<label for='" + choiceId + "'>";
-                content += "<input type='radio' id='" + choiceId + "' name='answer_" + index + "' value='" + escapeHtml(choice) + "' required> ";
-                content += escapeHtml(choice);
-                content += "</label>";
-                content += "</p>";
-            });
-        } else {
-            content += "<p><input type='text' name='answer_" + index + "' required></p>";
-        }
+    if (question.imagePath) {
+        content += "<p>";
+        content += "<img src='" + escapeHtml(question.imagePath) + "' alt='Question image' style='max-width:320px; max-height:220px; border-radius:8px;'>";
+        content += "</p>";
+    }
+
+    content += "<input type='hidden' id='timeLeft' name='timeLeft' value='" + secondsPerQuestion + "'>";
+
+    if (question.questionType === "MC" || question.questionType === "TF") {
+        question.choices.forEach(function(choice, choiceIndex) {
+            var choiceId = "choice_" + choiceIndex;
+            content += "<p>";
+            content += "<label for='" + choiceId + "'>";
+            content += "<input type='radio' id='" + choiceId + "' name='answer' value='" + escapeHtml(choice.value) + "' required> ";
+            content += escapeHtml(choice.text || choice.value);
+            content += "</label>";
+            content += "</p>";
+        });
+    } else if (question.questionType === "MC_IMAGE") {
+        content += "<div style='display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:16px;'>";
+
+        question.choices.forEach(function(choice, choiceIndex) {
+            var choiceId = "choice_" + choiceIndex;
+
+            content += "<label for='" + choiceId + "' style='border:1px solid #ccc; padding:12px; border-radius:10px; cursor:pointer; text-align:center;'>";
+            content += "<input type='radio' id='" + choiceId + "' name='answer' value='" + escapeHtml(choice.value) + "' required>";
+            content += "<br>";
+
+            if (choice.imagePath) {
+                content += "<img src='" + escapeHtml(choice.imagePath) + "' alt='" + escapeHtml(choice.text || "choice image") + "' style='max-width:150px; max-height:100px; margin-top:8px;'>";
+            }
+
+            content += "<p>" + escapeHtml(choice.text || "Flag choice") + "</p>";
+            content += "</label>";
+        });
 
         content += "</div>";
-    });
+    } else {
+        content += "<p><input type='text' name='answer' required></p>";
+    }
 
-    content += "<p><button type='submit'>Submit Quiz</button></p>";
+    content += "</div>";
+
+    content += "<p><button type='submit'>Submit Answer</button></p>";
     content += "</form>";
     content += "</section>";
+
+    if (quiz.timed) {
+        content += `
+            <script>
+                var remaining = ${secondsPerQuestion};
+                var timerEl = document.getElementById("quiz-timer");
+                var formEl = document.getElementById("quiz-form");
+                var timeLeftInput = document.getElementById("timeLeft");
+                var submitted = false;
+
+                function removeRequiredInputs() {
+                    var inputs = formEl.querySelectorAll("input[required]");
+                    inputs.forEach(function(input) {
+                        input.required = false;
+                    });
+                }
+
+                function updateTimer() {
+                    timerEl.textContent = remaining + " seconds";
+                    timeLeftInput.value = remaining;
+
+                    if (remaining <= 0 && !submitted) {
+                        submitted = true;
+                        removeRequiredInputs();
+                        formEl.submit();
+                        return;
+                    }
+
+                    remaining--;
+                }
+
+                formEl.addEventListener("submit", function() {
+                    submitted = true;
+                    timeLeftInput.value = remaining;
+                });
+
+                updateTimer();
+                setInterval(updateTimer, 1000);
+            </script>
+        `;
+    }
 
     res.send(renderPage(req, "Quiz", content));
 });
 
-// submit quiz
-router.post("/quiz/submit", async function(req, res) {
+// submit one quiz answer
+router.post("/quiz/answer", async function(req, res) {
     try {
         var quiz = req.session.currentQuiz;
 
         if (!quiz || !quiz.questions || quiz.questions.length === 0) {
-            return res.send(renderPage(req, "Quiz Results", "<p>No active quiz to submit.</p><p><a href='/study'>Back to Study &amp; Quiz</a></p>"));
+            return res.send(renderPage(req, "Quiz", "<p>No active quiz to submit.</p><p><a href='/study'>Back to Study &amp; Quiz</a></p>"));
         }
 
-        var score = 0;
-        var gradedQuestions = [];
+        var index = quiz.currentIndex || 0;
 
-        quiz.questions.forEach(function(question, index) {
-            var userAnswer = req.body["answer_" + index] || "";
-            var normalizedUserAnswer = String(userAnswer).trim().toLowerCase();
-            var normalizedCorrectAnswer = String(question.correctAnswer).trim().toLowerCase();
+        if (index >= quiz.questions.length) {
+            return res.redirect("/quiz/results");
+        }
 
-            var isCorrect = normalizedUserAnswer === normalizedCorrectAnswer;
+        var question = quiz.questions[index];
+        var userAnswer = req.body.answer || "";
+        var timing = quiz.timing || quizHelpers.getQuizTiming(quiz.difficulty);
+        var secondsPerQuestion = timing.secondsPerQuestion;
+        var maxPointsPerQuestion = timing.maxPointsPerQuestion;
+        var timeLeft = Number(req.body.timeLeft) || 0;
+        var timeLeftRatio = quiz.timed ? timeLeft / secondsPerQuestion : 1;
 
-            if (isCorrect) {
-                score += 1;
-            }
+        var isCorrect = false;
 
-            gradedQuestions.push({
-                templateId: question.templateId,
-                cityId: question.cityId,
-                questionText: question.questionText,
-                correctAnswer: question.correctAnswer,
-                userAnswer: userAnswer,
-                isCorrect: isCorrect
-            });
+        if (question.questionType === "FB") {
+            isCorrect = quizHelpers.isFillInCorrect(
+                userAnswer,
+                question.correctAnswer,
+                question.altAnswers || []
+            );
+        } else {
+            isCorrect =
+                String(userAnswer).trim().toLowerCase() ===
+                String(question.correctAnswer).trim().toLowerCase();
+        }
+
+        var questionPoints = quizHelpers.calculateQuestionPoints(
+            isCorrect,
+            timeLeftRatio,
+            maxPointsPerQuestion
+        );
+
+        if (isCorrect) {
+            quiz.correctCount += 1;
+        }
+
+        quiz.totalPoints += questionPoints;
+
+        quiz.gradedQuestions.push({
+            templateId: question.templateId,
+            cityId: question.cityId,
+            questionText: question.questionText,
+            correctAnswer: question.correctAnswer,
+            userAnswer: userAnswer,
+            isCorrect: isCorrect,
+            pointsEarned: questionPoints,
+            timeLeft: timeLeft
         });
 
+        quiz.currentIndex = index + 1;
+        req.session.currentQuiz = quiz;
+
+        if (quiz.currentIndex >= quiz.questions.length) {
+            return res.redirect("/quiz/results");
+        }
+
+        res.redirect("/quiz");
+    } catch (err) {
+        console.error("Quiz answer error:", err);
+        res.status(500).send("Could not submit answer.");
+    }
+});
+
+// quiz results
+router.get("/quiz/results", async function(req, res) {
+    try {
+        var quiz = req.session.currentQuiz;
+
+        if (!quiz || !quiz.gradedQuestions) {
+            return res.send(renderPage(req, "Quiz Results", "<p>No quiz results are available.</p><p><a href='/study'>Back to Study &amp; Quiz</a></p>"));
+        }
+
         if (req.session.user) {
-            await quizHelpers.saveQuizResults(req.session.user.userId, quiz, gradedQuestions, score);
+            await quizHelpers.saveQuizResults(
+                req.session.user.userId,
+                quiz,
+                quiz.gradedQuestions,
+                quiz.totalPoints
+            );
         }
 
         var content = "";
+
         content += "<section class='hero'>";
         content += "<h1>Quiz Results</h1>";
-        content += "<p><strong>Score:</strong> " + score + " / " + quiz.questions.length + "</p>";
+        content += "<p><strong>Correct:</strong> " + quiz.correctCount + " / " + quiz.questions.length + "</p>";
+        content += "<p><strong>Total Points:</strong> " + quiz.totalPoints + "</p>";
+
+        if (quiz.timed) {
+            content += "<p>Timed mode used Kahoot-style scoring: faster correct answers earned more points.</p>";
+        }
 
         if (!req.session.user) {
             content += "<p>You played as a guest, so this score was not saved.</p>";
@@ -209,12 +375,18 @@ router.post("/quiz/submit", async function(req, res) {
 
         content += "<section class='cities-section'>";
 
-        gradedQuestions.forEach(function(question, index) {
+        quiz.gradedQuestions.forEach(function(question, index) {
             content += "<div class='city-card'>";
             content += "<p><strong>Question " + (index + 1) + ":</strong> " + escapeHtml(question.questionText) + "</p>";
             content += "<p><strong>Your Answer:</strong> " + escapeHtml(question.userAnswer || "(blank)") + "</p>";
             content += "<p><strong>Correct Answer:</strong> " + escapeHtml(question.correctAnswer) + "</p>";
             content += "<p><strong>Result:</strong> " + (question.isCorrect ? "Correct" : "Incorrect") + "</p>";
+            content += "<p><strong>Points Earned:</strong> " + question.pointsEarned + "</p>";
+
+            if (quiz.timed) {
+                content += "<p><strong>Time Left:</strong> " + question.timeLeft + " seconds</p>";
+            }
+
             content += "</div>";
         });
 
@@ -225,8 +397,8 @@ router.post("/quiz/submit", async function(req, res) {
 
         res.send(renderPage(req, "Quiz Results", content));
     } catch (err) {
-        console.error("Quiz submit error:", err);
-        res.status(500).send("Could not grade quiz.");
+        console.error("Quiz results error:", err);
+        res.status(500).send("Could not load quiz results.");
     }
 });
 

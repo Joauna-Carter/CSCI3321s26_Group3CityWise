@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit City Page: <%= city.CityName %></title>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+  <style>
+    .editor-page {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .editor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 16px;
+    }
+
+    .editor-box {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    #editor {
+      min-height: 600px;
+      background: white;
+    }
+
+    #editor img {
+      max-width: 600px;
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    #editor table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+
+    #editor th,
+    #editor td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      vertical-align: top;
+    }
+
+    #editor th {
+      background-color: #f4f4f4;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .form-actions input {
+      flex: 1;
+      padding: 10px;
+    }
+
+    .form-actions button,
+    .form-actions a {
+      padding: 10px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .save-btn {
+      background: #007BFF;
+      color: white;
+    }
+
+    .cancel-btn {
+      background: #e5e7eb;
+      color: black;
+    }
+
+    .reset-btn {
+      background: #f59e0b;
+      color: black;
+      padding: 10px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .reset-note {
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="navbar">
+  <div class="nav-left">
+    <a href="/" class="logo">CityWise</a>
+  </div>
+
+  <div class="nav-center">
+    <a href="/" class="nav-tab">Home</a>
+    <a href="/cities" class="nav-tab">City Trivia</a>
+    <a href="/study" class="nav-tab">Study &amp; Quiz</a>
+    <a href="/map" class="nav-tab">Map</a>
+    <a href="/leaderboard" class="nav-tab">Leaderboard</a>
+    <a href="/statistics" class="nav-tab">Statistics</a>
+    <a href="/admin" class="nav-tab">Admin</a>
+  </div>
+
+  <div class="nav-right">
+    <a href="/profile"><%= username %></a>
+    <span class="divider">|</span>
+    <a href="/logout">Log Out</a>
+  </div>
+</header>
+
+<main class="editor-page">
+
+  <div class="editor-header">
+    <div>
+      <h1>Edit City Page: <%= city.CityName %></h1>
+      <p>
+        <a href="/cities/<%= city.CityID %>">Back to city page</a>
+        |
+        <a href="/admin/cities/<%= city.CityID %>/history">View edit history</a>
+      </p>
+      <p class="reset-note">
+        Edit the article content only. The navbar, admin tools, and quiz buttons stay outside the editor.
+      </p>
+    </div>
+
+    <form method="POST" action="/admin/cities/<%= city.CityID %>/content/reset">
+      <button class="reset-btn" type="submit">Reset From Database</button>
+    </form>
+  </div>
+
+  <form method="POST" action="/admin/cities/<%= city.CityID %>/content" id="editForm">
+    <input type="hidden" name="pageContent" id="pageContentInput">
+
+    <div class="editor-box">
+      <div id="editor"><%- pageContent %></div>
+    </div>
+
+    <div class="form-actions">
+      <input type="text" name="editSummary" placeholder="Describe what you changed">
+      <a class="cancel-btn" href="/cities/<%= city.CityID %>">Cancel</a>
+      <button class="save-btn" type="submit">Save Changes</button>
+    </div>
+  </form>
+
+</main>
+
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+<script>
+  var quill = new Quill("#editor", {
+    theme: "snow",
+    modules: {
+      toolbar: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline"],
+        [{ color: [] }, { background: [] }],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["link", "image"],
+        ["clean"]
+      ]
+    }
+  });
+
+  document.getElementById("editForm").addEventListener("submit", function() {
+    document.getElementById("pageContentInput").value = quill.root.innerHTML;
+  });
+</script>
+
+</body>
+</html>

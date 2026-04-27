@@ -61,8 +61,11 @@ router.post("/register", async function(req, res) {
         req.session.user = {
             userId: userId,
             username: username,
+            userType: "user",
             isAdmin: false
         };
+
+        req.session.isAdmin = false;
 
         res.redirect("/");
     } catch (err) {
@@ -109,11 +112,15 @@ router.post("/login", async function(req, res) {
             return res.status(400).send("Incorrect password.");
         }
 
-        req.session.user = {
-            userId: user.UserID,
-            username: user.Username,
-            isAdmin: user.UserType === "admin"
-        };
+       req.session.user = {
+        
+        userId: user.UserID,
+        username: user.Username,
+        userType: user.UserType,
+        isAdmin: user.UserType === "admin"
+       };
+
+        req.session.isAdmin = user.UserType === "admin";
 
         res.redirect("/");
     } catch (err) {

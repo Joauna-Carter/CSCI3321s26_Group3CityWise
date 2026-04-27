@@ -42,6 +42,23 @@ app.use(function(req, res, next) {
     next();
 });
 
+app.use(function(req, res, next) {
+    var isAdmin =
+        req.session.user &&
+        (
+            req.session.user.userType === "admin" ||
+            req.session.user.UserType === "admin" ||
+            req.session.user.isAdmin === true ||
+            req.session.isAdmin === true
+        );
+
+    res.locals.isLoggedIn = !!req.session.user;
+    res.locals.username = req.session.user ? req.session.user.username || req.session.user.Username : null;
+    res.locals.isAdmin = !!isAdmin;
+
+    next();
+});
+
 // routes
 app.use("/", authRoutes);
 app.use("/", cityRoutes);

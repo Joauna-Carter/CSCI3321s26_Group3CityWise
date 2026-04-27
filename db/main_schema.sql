@@ -12,7 +12,7 @@ CREATE TABLE Countries (
     CountryID INT AUTO_INCREMENT PRIMARY KEY,
     CountryName VARCHAR(100) NOT NULL UNIQUE,
     RegionID INT NOT NULL,
-    FlagImagePath VARCHAR(255) NULL,
+    FlagImagePath TEXT NULL,
     CONSTRAINT fk_countries_region
         FOREIGN KEY (RegionID) REFERENCES Regions(RegionID)
 );
@@ -25,7 +25,8 @@ CREATE TABLE Cities (
     Description TEXT NULL,
     Latitude DECIMAL(9,6) NULL,
     Longitude DECIMAL(9,6) NULL,
-    CityImagePath VARCHAR(255) NULL,
+    CityImagePath TEXT NULL,
+    IsActive BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT fk_cities_country
         FOREIGN KEY (CountryID) REFERENCES Countries(CountryID),
     CONSTRAINT uq_city_country UNIQUE (CityName, CountryID)
@@ -34,7 +35,7 @@ CREATE TABLE Cities (
 CREATE TABLE Users (
     UserID INT AUTO_INCREMENT PRIMARY KEY,
     Username VARCHAR(50) NOT NULL UNIQUE,
-    PasswordHash VARCHAR(255) NOT NULL,
+    PasswordHash TEXT NOT NULL,
     UserType VARCHAR(20) NOT NULL,
     CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     IsDeleted BOOLEAN NOT NULL DEFAULT FALSE,
@@ -47,7 +48,7 @@ CREATE TABLE UserProfiles (
     UserID INT NOT NULL UNIQUE,
     DisplayName VARCHAR(100) NOT NULL,
     Bio TEXT NULL,
-    ProfileImagePath VARCHAR(255) NULL,
+    ProfileImagePath TEXT NULL,
     FavoriteRegionID INT NULL,
     FavoriteCityID INT NULL,
     CONSTRAINT fk_profiles_user
@@ -66,7 +67,8 @@ CREATE TABLE CityFacts (
     FactLabel VARCHAR(100) NOT NULL,
     FactValue TEXT NOT NULL,
     AltAnswers TEXT NULL,
-    FactImageType VARCHAR(50) NULL,
+    FactImagePath TEXT NULL,
+    IsActive BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT fk_cityfacts_city
         FOREIGN KEY (CityID) REFERENCES Cities(CityID)
 );
@@ -85,7 +87,7 @@ CREATE TABLE CityPageRevisions (
     CityID INT NOT NULL,
     EditedByUserID INT NULL,
     PageContent LONGTEXT NOT NULL,
-    EditSummary VARCHAR(255) NULL,
+    EditSummary TEXT NULL,
     CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_citypagerevisions_city
         FOREIGN KEY (CityID) REFERENCES Cities(CityID),
@@ -97,9 +99,9 @@ CREATE TABLE CityPageRevisions (
 CREATE TABLE CityPageImages (
     CityPageImageID INT AUTO_INCREMENT PRIMARY KEY,
     CityID INT NOT NULL,
-    ImagePath VARCHAR(255) NOT NULL,
-    AltText VARCHAR(255) NULL,
-    Caption VARCHAR(255) NULL,
+    ImagePath TEXT NOT NULL,
+    AltText TEXT NULL,
+    Caption TEXT NULL,
     UploadedByUserID INT NULL,
     UploadedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_citypageimages_city
@@ -115,9 +117,11 @@ CREATE TABLE QuestionTemplates (
     AnswerSource VARCHAR(50) NOT NULL,
     RequiredFactType VARCHAR(50) NULL,
     RequiredFactSubtype VARCHAR(50) NULL,
+    RequiredFactLabel VARCHAR(100) NULL,
     ImageSourceType VARCHAR(50) NULL,
+    IsActive BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT chk_templates_qtype
-        CHECK (QuestionType IN ('MC', 'TF', 'FB'))
+        CHECK (QuestionType IN ('MC', 'TF', 'FB', 'MC_IMAGE'))
 );
 
 CREATE TABLE CustomQuestions (
@@ -132,11 +136,11 @@ CREATE TABLE CustomQuestions (
     Explanation TEXT NULL,
     Difficulty VARCHAR(20) NULL,
     IsActive BOOLEAN NOT NULL DEFAULT TRUE,
-    ImagePath VARCHAR(255) NULL,
+    ImagePath TEXT NULL,
     CONSTRAINT fk_customquestions_city
         FOREIGN KEY (CityID) REFERENCES Cities(CityID),
     CONSTRAINT chk_customquestions_qtype
-        CHECK (QuestionType IN ('MC', 'TF', 'FB'))
+        CHECK (QuestionType IN ('MC', 'TF', 'FB', 'MC_IMAGE'))
 );
 
 CREATE TABLE QuizAttempts (

@@ -1,11 +1,11 @@
-CityName,CountryID,Population,Description,Latitude,Longitude,CityImagePath
-Los Angeles,1,3898747,"Major U.S. city known for Hollywood, entertainment, beaches, and culture",34.05,-118.25,https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Los_Angeles_with_Mount_Baldy.jpg/960px-Los_Angeles_with_Mount_Baldy.jpg
-Mexico City,3,9209944,"Capital and largest city of Mexico, known for rich history, Aztec origins, and cultural landmarks",19.43,-99.13,https://content.presspage.com/uploads/2278/3fa93fbb-a0df-4b70-9d4b-6591f5afd01f/1920_adobestock-192337612.jpeg?10000
-Paris,10,,,,,
-Rome,12,,,,,
-Seoul,41,,,,,
-Rio de Janeiro,7,,,,,
-Buenos Aires,8,,,,,
-Cairo,43,,,,,
-Cape Town,20,,,,,
-Melbourne,19,,,,,
+,CityName,CountryID,Population,Description,Latitude,Longitude,CityImagePath
+,Los Angeles,1,3898747,"Major U.S. city known for Hollywood, entertainment, beaches, and culture",34.05,-118.25,https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Los_Angeles_with_Mount_Baldy.jpg/960px-Los_Angeles_with_Mount_Baldy.jpg
+,Mexico City,3,9209944,"Capital and largest city of Mexico, known for rich history, Aztec origins, and cultural landmarks",19.43,-99.13,https://content.presspage.com/uploads/2278/3fa93fbb-a0df-4b70-9d4b-6591f5afd01f/1920_adobestock-192337612.jpeg?10000
+,Paris,10,2050000,"France's capital, is a major European city and a global center for art, fashion, gastronomy and culture.",48.8575,2.3522,https://www.royalcaribbean.com/media-assets/pmc/content/dam/shore-x/paris-le-havre-leh/lh17-paris-sightseeing-without-lunch/stock-photo-skyline-of-paris-with-eiffel-tower-at-sunset-in-paris-france-eiffel-tower-is-one-of-the-most-752725282.jpg?w=1024
+,Rome,12,"2,800,000",the capital city and most populated comune of Italy. It is also the administrative centre of the Lazio region and of the Metropolitan City of Rome.,41.9028,12.4964,https://thumbs.dreamstime.com/b/rome-skyline-st-peter-cathedral-italy-wonderful-view-sunset-102885136.jpg
+,Seoul,42,9600000,"the capital of South Korea, is a huge metropolis where modern skyscrapers, high-tech subways and pop culture meet Buddhist temples, palaces and street markets.",37.56,126.99,https://t4.ftcdn.net/jpg/02/58/00/87/360_F_258008704_rtbLWxLBUfMsryzYHEh7pfRkwEspn9XV.jpg
+,Rio de Janeiro,7,6750000,"a huge seaside city in Brazil, famed for its Copacabana and Ipanema beaches, 38m Christ the Redeemer statue atop Mount Corcovado and for Sugarloaf Mountain, a granite peak with cable cars to its summit.",-22.9068,-43.1729,https://media.istockphoto.com/id/531479034/photo/sugarloaf-mountain-in-rio-de-janeiro-brazil.jpg?s=612x612&w=0&k=20&c=1kNny8LTj7iw21MyAT_fF0x6FXHpHLrn0qQ0PUueCEo=
+,Buenos Aires,8,3100000,"Argentina’s big, cosmopolitan capital city. Its center is the Plaza de Mayo, lined with stately 19th-century buildings including Casa Rosada, the iconic, balconied presidential palace.",-34.607568,-58.437089,https://images.skyscrapercenter.com/uploads/Buenos-Aires_-2018_(CC__BY)Deensel_WEB201216-031248.jpg
+,Cairo,44,22000000,"Egypt’s sprawling capital, is set on the Nile River. At its heart is Tahrir Square and the vast Egyptian Museum, a trove of antiquities including royal mummies and gilded King Tutankhamun artifacts.",30.0444,31.2357,https://t4.ftcdn.net/jpg/02/95/63/15/360_F_295631594_WTKGFGnCwpELtfDVnyPg0ol90z9XxBwK.jpg
+,Cape Town,20,5800000,"a port city on South Africa’s southwest coast, on a peninsula beneath the imposing Table Mountain.",-33.9249,18.4241,https://www.shutterstock.com/image-photo/cape-town-city-cbd-table-600nw-2337902495.jpg
+,Melbourne,19,6000000,"a major, culturally diverse capital city in Victoria with rapid population growth, driven by a high overseas migration rate",-37.8096,144.965,https://media.timeout.com/images/105932250/1920/1440/image.webp

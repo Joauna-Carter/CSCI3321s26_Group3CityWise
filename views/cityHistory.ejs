@@ -1,0 +1,56 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit History - <%= city.CityName %></title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header class="navbar">
+  <div class="nav-left">
+    <a href="/" class="logo">CityWise</a>
+  </div>
+
+  <div class="nav-center">
+    <a href="/" class="nav-tab">Home</a>
+    <a href="/cities" class="nav-tab">City Trivia</a>
+    <a href="/study" class="nav-tab">Study &amp; Quiz</a>
+    <a href="/map" class="nav-tab">Map</a>
+    <a href="/leaderboard" class="nav-tab">Leaderboard</a>
+    <a href="/statistics" class="nav-tab">Statistics</a>
+    <a href="/admin" class="nav-tab">Admin</a>
+  </div>
+
+  <div class="nav-right">
+    <a href="/profile"><%= username %></a>
+    <span class="divider">|</span>
+    <a href="/logout">Log Out</a>
+  </div>
+</header>
+
+<main class="home-container">
+  <section class="hero">
+    <h1>Edit History: <%= city.CityName %></h1>
+    <p><a href="/cities/<%= city.CityID %>">Back to city page</a></p>
+  </section>
+
+  <% if (revisions.length === 0) { %>
+    <p>No revisions yet.</p>
+  <% } else { %>
+    <% revisions.forEach(function(rev) { %>
+      <div class="city-card">
+        <p><strong>Date:</strong> <%= rev.CreatedAt %></p>
+        <p><strong>Edited by:</strong> <%= rev.Username || "Unknown" %></p>
+        <p><strong>Summary:</strong> <%= rev.EditSummary || "No summary" %></p>
+        <hr>
+        <div><%- rev.PageContent %></div>
+      </div>
+    <% }) %>
+  <% } %>
+</main>
+
+</body>
+</html>

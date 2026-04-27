@@ -1,0 +1,173 @@
+,CityID,FactType,FactSubtype,FactLabel,FactValue,AltAnswers,FactImagePath
+,1,QuickFact,General,Country,United States,USA;US,NULL
+,1,QuickFact,General,Population,"3,898,747",3.9 million,NULL
+,1,QuickFact,General,Demonym,Angeleno,Angelino,NULL
+,1,QuickFact,Geography,Elevation,233 ft,71 m,NULL
+,1,QuickFact,Culture,Named After,"Our Lady, Queen of the Angels",NULL,NULL
+,1,QuickFact,Symbol,Official Tree,Coral Tree (Erythrina afra),Coral tree,https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Erythrina_Caffra_flower.JPG/1280px-Erythrina_Caffra_flower.JPG
+,1,QuickFact,Symbol,Official Flower,Bird of Paradise (Strelitzia reginae),Bird of Paradise,https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Raggiana_Bird-of-Paradise_wild_5.jpg/500px-Raggiana_Bird-of-Paradise_wild_5.jpg
+,1,QuickFact,Symbol,Official Plant,Toyon (Heteromeles arbutifolia),Toyon plant,https://calscape.org/storage/app/species_images/calphotos/images/0000_0000_0113_2069.jpeg
+,1,FunFact,Landmark,"Contains over 2,600 stars",Hollywood Walk of Fame,2600 stars,https://www.californiabeaches.com/wp-content/uploads/2016/06/hollywood-walk-of-fame-60601.jpg
+,1,FunFact,Landmark,Largest Ice Age fossil site in the world,La Brea Tar Pits,NULL,https://allosaurusroar.com/wp-content/uploads/2016/06/la-brea-museum-elephants.jpg
+,1,FunFact,Event,Only North American city to host the Olympics twice,Los Angeles,Olympics,NULL
+,1,FunFact,Landmark,Theme park and real working film studio,Universal Studios Hollywood,Universal Studios,https://www.thegarland.com/images/hero/small/ush-globe-header.jpg
+,1,FunFact,Culture,Largest historic theatre district on the National Register of Historic Places,Los Angeles,Historic Theatre District,https://loveseatown.com/app/uploads/2025/01/historic-theatre-district-202501-paramount-theatre-4x3-v1.jpg
+,2,QuickFact,General,Country,Mexico,NULL,NULL
+,2,QuickFact,General,Population,"9,209,944",9.2 million,NULL
+,2,QuickFact,General,Demonym,Capitalino,Chilango,NULL
+,2,QuickFact,Geography,Elevation,"2,240 m","7,350 ft",NULL
+,2,QuickFact,Culture,Nickname,La Ciudad de los Palacios,City of Palaces,NULL
+,2,QuickFact,Culture,Motto,Capital de la transformación,Capital of the transformation,NULL
+,2,QuickFact,History,Founded,1325,Tenochtitlan,NULL
+,2,QuickFact,Status,Capital of Mexico,Mexico City,Capital city,NULL
+,2,FunFact,Geography,Most populous city in North America,Mexico City,NULL,NULL
+,2,FunFact,Landmark,Largest urban park in Latin America,Chapultepec Park,Bosque de Chapultepec,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjpjdyI5ZDr3I0PtWdVPf_1UIZLajGn9DKHA&s
+,2,FunFact,Culture,Known for Aztec and colonial architecture,Historic Center of Mexico City,NULL,https://lifeontheroam.com/wp-content/uploads/2023/07/Palace-of-Fine-Arts-Mexico-City-Historic-Centre-t-min.webp
+,2,FunFact,Culture,Second most museums in the world,Mexico City,2nd most museums,NULL
+,2,FunFact,Religion,Second most visited Catholic shrine,Basilica of Guadalupe,NULL,https://mexiconewsdaily.com/wp-content/uploads/2025/12/NB.jpg
+,2,FunFact,Landmark,Only royal castle in the Americas,Chapultepec Castle,NULL,https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Castillo-de-chapultepec.jpg/250px-Castillo-de-chapultepec.jpg
+,2,FunFact,Landmark,Monument celebrating Mexico’s independence,Angel of Independence,El Ángel,https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Victoria_Alada_de_la_Columna_de_la_Independencia_01.jpg/250px-Victoria_Alada_de_la_Columna_de_la_Independencia_01.jpg
+,3,QuickFact,General,Country,France,NULL,NULL
+,3,QuickFact,General,Population,"2,800,000",2.8 million,NULL
+,3,QuickFact,Culture,Nickname,City of Lights,NULL,NULL
+,3,FunFact,History,Originally a Roman city called,Lutetia,NULL,NULL
+,3,FunFact,Landmark,World's largest art museum,Louvre,NULL,"https://res.cloudinary.com/odysseytraveller/image/fetch/f_auto,q_auto,dpr_auto,r_4,w_1520,h_700,c_fill/https://cdn.odysseytraveller.com/app/uploads/2018/08/louvre-102840.jpg"
+,3,FunFact,Landmark,Monument honoring French Revolution and Napoleonic Wars,Arc de Triomphe,NULL,https://cdn.britannica.com/28/255528-050-E63F53A7/arc-de-triumph-paris-france.jpg
+,3,FunFact,Landmark,Underground ossuaries holding over six million people,Catacombs of Paris,Paris Catacombs,https://www.parisperfect.com/g/photos/upload/sml_1055743116-1451221585-correctsize-catacombs-hero.jpg 
+,3,FunFact,Landmark,Main bell of Notre Dame Cathedral,Emmanuel,NULL,NULL
+,3,FunFact,Geography,Number of streets in Paris,"6,100 rues","6,100",NULL
+,3,FunFact,Geography,Shortest street in Paris,Rue des Degrés,NULL,NULL
+,3,FunFact,Culture,First public movie screening location,Paris,NULL,NULL
+,3,FunFact,Culture,Inventors of early cinema,Auguste and Louis Lumière,Lumière brothers,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPXcKTRA8El2bAp0dHptWtGXHxvdbN8lCHQQ&s
+,3,FunFact,History,First printed book in France location,Paris,NULL,NULL
+,3,FunFact,Landmark,Number of Statue of Liberty replicas,3,NULL,https://img.atlasobscura.com/IFVnJ2gafRqVikYd4jwkC0CA2muB3dsdN9jvvs2_ojQ/rt:fit/w:1200/q:80/sm:1/scp:1/ar:1/aHR0cHM6Ly9hdGxh/cy1kZXYuczMuYW1h/em9uYXdzLmNvbS91/cGxvYWRzL3BsYWNl/X2ltYWdlcy8xNWJi/NTYzNS1lZDhiLTRm/ODYtOGYxOS01ZGNk/MjliNGU1NjljYzky/YTg0NDYwMmRmYjM4/OTNfUGFyaXMtaWxl/LWF1eC1jeWduZXMt/c3RhdHVlLWRlLWxh/LWxpYmVydGUtdG91/ci1laWZmZWwtc2Vp/bmUuanBn.jpg
+,3,FunFact,Landmark,Steps to the top of the Eiffel Tower,"1,665",NULL,https://upload.wikimedia.org/wikipedia/commons/8/85/Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg
+,3,FunFact,History,First army to use camouflage,French army,NULL,NULL
+,3,FunFact,Landmark,Famous cathedral in Paris,Notre Dame Cathedral,Notre Dame,https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Notre-Dame_de_Paris_2013-07-24.jpg/250px-Notre-Dame_de_Paris_2013-07-24.jpg
+,4,QuickFact,General,Country,Italy,NULL,NULL
+,4,QuickFact,General,Population,"2,746,984",2.7 million; 27000000,NULL
+,4,QuickFact,General,Demonym,Roman,NULL,NULL
+,4,QuickFact,Culture,Nickname,Eternal City,NULL,NULL
+,4,QuickFact,Culture,Nickname,City of Seven Hills,NULL,NULL
+,4,QuickFact,Culture,Nickname,Capital of the World,Caput Mundi,NULL
+,4,QuickFact,Geography,River flowing through Rome,Tiber River,Tiber,NULL
+,4,FunFact,History,Legendary founder of Rome,Romulus,NULL,https://upload.wikimedia.org/wikipedia/commons/9/95/Brogi%2C_Carlo_%281850-1925%29_-_n._8226_-_Certosa_di_Pavia_-_Medaglione_sullo_zoccolo_della_facciata.jpg
+,4,FunFact,History,Traditional founding year of Rome,753 BC,NULL,NULL
+,4,FunFact,Geography,Number of fountains in Rome,280,NULL,NULL
+,4,FunFact,Culture,Number of churches in Rome,900,NULL,NULL
+,4,FunFact,Culture,Museum dedicated entirely to pasta,Pasta Museum,NULL,NULL
+,4,FunFact,Landmark,Coins tossed into Trevi Fountain each year,"700,000 euros",NULL,NULL
+,4,FunFact,Landmark,Famous Roman fountain,Trevi Fountain,NULL,"https://static.wixstatic.com/media/e41b5c_5f12abc2ed614742ac47f306df5411ad~mv2.jpg/v1/fill/w_2500,h_1666,al_c/e41b5c_5f12abc2ed614742ac47f306df5411ad~mv2.jpg"
+,4,FunFact,History,Roman road network length,"53,000 miles","53,000",NULL
+,4,FunFact,History,Saying associated with Roman roads,All roads lead to Rome,NULL,NULL
+,4,FunFact,History,First shopping mall built by,Emperor Trajan,NULL,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXcHAdaC7hZMfaUhDfLGJ7O_o0BTLQpnNgQw&s
+,4,FunFact,History,First shopping mall built in Rome year,107–110 AD,NULL,NULL
+,4,FunFact,Landmark,Largest church ever constructed,St Peter’s Basilica,NULL,https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Basilica_di_San_Pietro_in_Vaticano_September_2015-1a.jpg/1280px-Basilica_di_San_Pietro_in_Vaticano_September_2015-1a.jpg
+,4,FunFact,Landmark,Largest amphitheater in Rome,Colosseum,NULL,https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Colosseo_2020.jpg/1280px-Colosseo_2020.jpg
+,4,FunFact,Landmark,Ancient political and economic center of Rome,Roman Forum,NULL,https://cdn.britannica.com/77/187677-138-73F32D16/buildings-Rome-Roman-Forum.jpg?w=800&h=450&c=crop
+,4,FunFact,Landmark,Ancient temple still standing,Pantheon,NULL,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsGmquVGlQW0CTk97rPLwvLZuFfy4uekotYQ&s
+,4,FunFact,Culture,City with the most monuments in the world,Rome,NULL,NULL
+,5,QuickFact,General,Country,South Korea,NULL,NULL
+,5,QuickFact,General,Population,"9,600,000",9.6 million,NULL
+,5,QuickFact,General,Demonym,Seoulite,NULL,NULL
+,5,QuickFact,Status,Capital of South Korea,Seoul,NULL,NULL
+,5,QuickFact,Culture,Motto,"Seoul, my soul",NULL,NULL
+,5,QuickFact,Geography,River flowing through Seoul,Han River,NULL,NULL
+,5,FunFact,History,Founded by,Taejo of Joseon,NULL,NULL
+,5,FunFact,History,Capital since,1394,NULL,NULL
+,5,FunFact,Culture,Number of royal palaces,5,NULL,NULL
+,5,FunFact,Landmark,Famous royal palace,Gyeongbokgung Palace,NULL,https://travel.usnews.com/images/Gyeongbokgung_1_Getty_Images.jpg 
+,5,FunFact,Geography,City divided by river,Han River,NULL,
+,5,FunFact,Culture,Center of,Korean Wave,K-pop;Hallyu,
+,5,FunFact,Culture,Major entertainment district,Gangnam,NULL,https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Teheran-ro_Yeongdong-daero_crossing_7.jpg/1280px-Teheran-ro_Yeongdong-daero_crossing_7.jpg
+,5,FunFact,Landmark,Famous observation tower,N Seoul Tower,NULL,https://upload.wikimedia.org/wikipedia/en/a/a6/NamsanTower_%28Cropped%29.jpeg
+,5,FunFact,Geography,Distance from North Korea border,35 miles,NULL,NULL
+,5,FunFact,Culture,City known for 24-hour lifestyle,Seoul,NULL,NULL
+,5,FunFact,Landmark,Longest bridge fountain,Moonlight Rainbow Fountain,NULL,"https://static.wixstatic.com/media/0505b9_da9fbea9147b44e7b2ed725994c16d72~mv2.jpg/v1/fill/w_980,h_552,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/0505b9_da9fbea9147b44e7b2ed725994c16d72~mv2.jpg"
+,6,QuickFact,General,Country,Brazil,NULL,NULL
+,6,QuickFact,General,Population,"6,750,000",6.7 million,NULL
+,6,QuickFact,Culture,Demonym,Carioca,NULL,NULL
+,6,QuickFact,Status,State capital of Rio de Janeiro,Rio de Janeiro,NULL,NULL
+,6,QuickFact,Culture,Nickname,Cidade Maravilhosa,Marvelous City,NULL
+,6,QuickFact,Geography,Coordinates,"22.90 S, 43.20 W",NULL,NULL
+,6,FunFact,Geography,Bay Rio was named after,Guanabara Bay,NULL,NULL
+,6,FunFact,History,Founded,1565,NULL,NULL
+,6,FunFact,Landmark,Famous statue in Rio,Christ the Redeemer,NULL,https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Christ_the_Redeemer_-_Cristo_Redentor.jpg/960px-Christ_the_Redeemer_-_Cristo_Redentor.jpg
+,6,FunFact,Landmark,Famous mountain,Sugarloaf Mountain,NULL,https://upload.wikimedia.org/wikipedia/commons/8/8d/P%C3%A3o_de_A%C3%A7ucar_-_Sugarloaf_Mountain_-_Zuckerhut_-_2022.jpg
+,6,FunFact,Landmark,Famous stadium,Maracanã Stadium,NULL,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJgBjDizg5uMeeDAN83Q8GZf-4CzfkAQ54Ew&s
+,6,FunFact,Culture,Famous festival,Carnival,NULL,https://bookers.s3.amazonaws.com/pages/aquecendo-antes-do-desfile-concentracao.jpg
+,6,FunFact,Culture,Music styles from Rio,Samba;Bossa nova,NULL,NULL
+,6,FunFact,Landmark,Famous beaches,Copacabana,Ipanema,https://upload.wikimedia.org/wikipedia/commons/6/62/Praia_de_Copacabana_-_Rio_de_Janeiro%2C_Brasil.jpg
+,6,FunFact,Event,Hosted Olympics,2016,NULL,https://cdn.britannica.com/64/190764-050-6D8D2A78/Logo-2016-Rio-de-Janeiro-Olympic-Games-2016.jpg
+,6,FunFact,Geography,Located near,Tropic of Capricorn,NULL,NULL
+,7,QuickFact,General,Country,Argentina,NULL,NULL
+,7,QuickFact,General,Population,"3,100,000",NULL,NULL
+,7,QuickFact,Culture,Demonym,porteño(a),NULL,NULL
+,7,QuickFact,Culture,Dance Style Birthplace,The Tango,NULL,https://www.insightvacations.com/blog/wp-content/uploads/2023/05/Large-Young-couple-dancing-Tango-in-street-200213137-001.jpg
+,7,FunFact,Culture,Nickname,"""Paris of South America""",NULL,NULL
+,7,FunFact,Culture,Nickname,Baires,NULL,NULL
+,7,FunFact,Culture,Nickname,Queen of the Plata,NULL,NULL
+,7,FunFact,Geography,River,Río de la Plata,NULL,NULL
+,7,FunFact,History,Founded,1536,NULL,NULL
+,7,FunFact,History,Reestablished,1580,NULL,NULL
+,7,FunFact,Culture,Famous opera house,Teatro Colón,NULL,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGCuGnM40Cr4GXouI3Q3MjiJWIQCSG9_dBhQ&s
+,7,FunFact,Culture,City type,Autonomous City,NULL,NULL
+,7,FunFact,Culture,Global city ranking,Alpha global city,NULL,NULL
+,7,FunFact,Landmark,World's widest avenue,9 de Julio,NULL,https://greatruns.com/wp-content/uploads/2017/05/avenida-9-de-julio-buenos-aires.jpeg
+,7,FunFact,Culture,Famous Author,Jorge Luis Borges,NULL,https://upload.wikimedia.org/wikipedia/commons/8/89/Jorge_Luis_Borges_1951%2C_by_Grete_Stern_%28full%29.jpg
+,8,QuickFact,General,Population,9800000,9.8 million,NULL
+,8,QuickFact,General,Demonym,Cairene,NULL,NULL
+,8,QuickFact,Culture,Nickname,City of a Thousand Minarets,NULL,NULL
+,8,FunFact,Geography,River flowing through Cairo,Nile River,NULL,https://www.tripsavvy.com/thmb/CJcguDmXNOqGJ21WOMt72-0NN9U=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/cairo05-56a1f4495f9b58b7d0c511ae.JPG
+,8,FunFact,History,Founded,969,NULL,NULL
+,8,FunFact,History,Earlier settlement,Fustat,NULL,NULL
+,8,FunFact,Culture,Number of hieroglyphs,700,NULL,NULL
+,8,FunFact,Culture,Mummy bandage length,1.6 km,NULL,NULL
+,8,QuickFact,Culture,Sacred animal in ancient Egypt,Cats,NULL,https://traveling-cats.com/wp-content/uploads/2018/01/cairo-cats.jpg
+,8,QuickFact,Landmark,Oldest university in Cairo,Al-Azhar University,4.7 million,https://cdn.britannica.com/74/228474-050-267470B8/View-from-the-Citadel-of-Old-Cairo-including-the-ancient-Al-Azhar-University-and-mosque.jpg
+,8,QuickFact,Culture,UNESCO World Heritage site,Historic Cairo,NULL,NULL
+,9,QuickFact,General,Country,South Africa,NULL,NULL
+,9,QuickFact,General,Population,4772846,4.7 million,NULL
+,9,QuickFact,General,Demonym,Capetonian,NULL,NULL
+,9,QuickFact,Culture,Nickname,Mother City,NULL,NULL
+,9,QuickFact,Culture,Nickname,Tavern of the Seas,NULL,NULL
+,9,QuickFact,Culture,Motto,Spes Bona,Good Hope,NULL
+,9,QuickFact,Status,Legislative capital of South Africa,Cape Town,NULL,NULL
+,9,FunFact,History,Founded,1652,NULL,NULL
+,9,FunFact,Landmark,Famous mountain,Table Mountain,NULL,https://cdn.britannica.com/41/75841-050-FAAE44F0/Table-Mountain-Cape-Town-Western-Bay-South.jpg
+,9,FunFact,Landmark,Famous point,Cape Point,NULL,https://www.atlasandboots.com/wp-content/uploads/2019/04/cape-point-feat-3.jpg
+,9,FunFact,Landmark,Historic fortress,Castle of Good Hope,NULL,https://afar.brightspotcdn.com/dims4/default/58e7f30/2147483647/strip/false/crop/800x500+0+0/resize/800x500!/quality/90/?url=https%3A%2F%2Fk3-prod-afar-media.s3.us-west-2.amazonaws.com%2Fbrightspot%2F4a%2Fda%2Fe98f17162cf729a4ff90fe3c2eb6%2Foriginal-9950e12904fefb906ba6ccb84b45113d.jpg
+,9,FunFact,Culture,Named best city by,New York Times,NULL,NULL
+,9,FunFact,Culture,Popular tourist destination,Table Mountain,NULL,https://cdn.britannica.com/41/75841-050-FAAE44F0/Table-Mountain-Cape-Town-Western-Bay-South.jpg
+,9,FunFact,Animals,Animals that can be found in cape town,Penguins,NULL,https://www.globeguide.ca/wp-content/uploads/2023/01/South-africa-boulders-beach-1.jpg
+,9,FunFact,People,Where did Nelson Mandela Live for 18 years,Cape Town,NULL,https://maryloudriedger2.wordpress.com/wp-content/uploads/2023/02/mandela.png?w=640
+,9,FunFact,Landmark,Oldest Graden in Capetown,Company's Garden,NULL,https://afar.brightspotcdn.com/dims4/default/13d8822/2147483647/strip/false/crop/800x450+0+25/resize/1200x675!/quality/90/?url=https%3A%2F%2Fk3-prod-afar-media.s3.us-west-2.amazonaws.com%2Fbrightspot%2F4c%2Fcb%2F9262500612c63591cb05db3302b6%2Foriginal-fc191a89f331b9390589829174597457.jpg
+,9,FunFact,People, Nelson Mandela famous speech after release,Cape Town,NULL,https://maryloudriedger2.wordpress.com/wp-content/uploads/2023/02/mandela.png?w=640
+,9,FunFact,History,Significance to the Dutch East India Company back in 1652,Half way point for those travelling towards the east,,
+,9,FunFact,,,,NULL,
+,9,FunFact,,,,NULL,
+,9,FunFact,,,,NULL,
+,9,FunFact,,,,NULL,
+,10,QuickFact,General,Country,Australia,NULL,NULL
+,10,QuickFact,General,State,Victoria,NULL,NULL
+,10,QuickFact,General,Population,6000000,6 million,NULL
+,10,QuickFact,General,Demonym,Melburnian,NULL,NULL
+,10,QuickFact,Geography,Bay,Port Phillip Bay,NULL,https://www.visitmelbourne.com/-/media/atdw/melbourne/see-and-do/nature-and-wildlife/national-parks-and-reserves/edd63a29b1f9f2b7d099f4f1cd5a3945_1600x1200.jpeg?ts=20251102391048
+,10,QuickFact,Geography,River,Yarra River,NULL,https://assets.travelloapp.com/uploads/deal/highlights-of-melbourne-cruise.jpg
+,10,QuickFact,Status,Capital of,Victoria,NULL,NULL
+,10,QuickFact,Status,Population rank in Australia,Second most populous,2nd,NULL
+,10,FunFact,History,Founded,1835,NULL,NULL
+,10,FunFact,History,Named after,William Lamb,NULL,https://upload.wikimedia.org/wikipedia/commons/4/4e/William_Lamb%2C_2nd_Viscount_Melbourne.jpg
+,10,FunFact,History,Former role,Interim capital of Australia,NULL,NULL
+,10,FunFact,Culture,Nickname,Australia's cultural capital,NULL,NULL
+,10,FunFact,Culture,Known for,"Street art, music, coffee",NULL,NULL
+,10,FunFact,Culture,Famous phrase,Four seasons in one day,NULL,NULL
+,10,FunFact,Sports,Event,Australian Open,NULL,NULL
+,10,FunFact,Sports,Event,Melbourne Cup,NULL,NULL
+,10,FunFact,Sports,Event,Australian Grand Prix,NULL,NULL
+,10,FunFact,Sports,Venue,Melbourne Cricket Ground,MCG,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsyywqBdyA8I-42ztOIzFqEazwwWBOoFF5VQ&s
+,10,FunFact,Culture,Global ranking,Most livable city,NULL,NULL
+,10,FunFact,Culture,UNESCO title,City of Literature,NULL,NULL
+,10,FunFact,History,Years as capital before Canberra,26,NULL,NULL
+,10,FunFact,Culture,Restaurants and cafes per capita,Highest in the world,NULL,NULL
+,10,FunFact,History,First traffic lights in Australia,Melbourne,NULL,NULL

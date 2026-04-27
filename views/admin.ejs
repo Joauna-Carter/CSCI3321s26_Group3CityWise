@@ -6,18 +6,9 @@
     <title>Admin - CityWise</title>
     <link rel="stylesheet" href="/css/style.css">
 
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
-
     <style>
-        #editor {
-            height: 280px;
-            background: white;
-        }
-
         .admin-grid {
             display: grid;
-            grid-template-columns: 1fr;
             gap: 24px;
         }
 
@@ -28,239 +19,191 @@
             padding: 20px;
         }
 
-        .admin-card h2 {
-            margin-top: 0;
-        }
-
-        .admin-form {
-            display: grid;
-            gap: 12px;
-        }
-
-        .admin-form input,
-        .admin-form textarea,
-        .admin-form select,
-        .admin-form button {
-            padding: 10px;
-            font-size: 1rem;
-        }
-
-        .admin-message {
-            margin-bottom: 20px;
-            padding: 12px;
-            border-radius: 10px;
-            background: #eef6ff;
-            border: 1px solid #b8d8ff;
-        }
-
-        .facts-table {
+        .admin-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 12px;
         }
 
-        .facts-table th,
-        .facts-table td {
+        .admin-table th,
+        .admin-table td {
             border: 1px solid #ddd;
             padding: 8px;
-            text-align: left;
-            vertical-align: top;
+        }
+
+        .inline-form {
+            display: inline;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .admin-links a {
+            display: inline-block;
+            margin-right: 10px;
+            padding: 8px 12px;
+            background: #1f2937;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        .admin-links a:hover {
+            background: #374151;
+        }
+
+        .admin-form input,
+        .admin-form select {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 8px;
+        }
+
+        .admin-form button {
+            padding: 10px 14px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .admin-form button:hover {
+            background: #0056b3;
         }
     </style>
 </head>
 <body>
 
-    <header class="navbar">
-        <div class="nav-left">
-            <a href="/" class="logo">CityWise</a>
-        </div>
+<header class="navbar">
+    <div class="nav-left">
+        <a href="/" class="logo">CityWise</a>
+    </div>
 
-        <div class="nav-center">
-            <a href="/" class="nav-tab">Home</a>
-            <a href="/cities" class="nav-tab">City Trivia</a>
-            <a href="/study" class="nav-tab">Study &amp; Quiz</a>
-            <a href="/map" class="nav-tab">Map</a>
-            <a href="/leaderboard" class="nav-tab">Leaderboard</a>
-            <a href="/statistics" class="nav-tab">Statistics</a>
-            <a href="/admin" class="nav-tab">Admin</a>
-        </div>
+    <div class="nav-center">
+        <a href="/" class="nav-tab">Home</a>
+        <a href="/cities" class="nav-tab">City Trivia</a>
+        <a href="/study" class="nav-tab">Study &amp; Quiz</a>
+        <a href="/map" class="nav-tab">Map</a>
+        <a href="/leaderboard" class="nav-tab">Leaderboard</a>
+        <a href="/statistics" class="nav-tab">Statistics</a>
+        <a href="/admin" class="nav-tab">Admin</a>
+    </div>
 
-        <div class="nav-right">
-            <a href="/profile"><%= username %></a>
-            <span class="divider">|</span>
-            <a href="/logout">Log Out</a>
-        </div>
-    </header>
+    <div class="nav-right">
+        <a href="/profile"><%= username %></a>
+        <span class="divider">|</span>
+        <a href="/logout">Log Out</a>
+    </div>
+</header>
 
-    <main class="home-container">
-        <section class="hero">
-            <h1>Admin Dashboard</h1>
-            <p>Manage cities, facts, and city page content from one place.</p>
+<main class="home-container">
+
+    <section class="hero">
+        <h1>Admin Dashboard</h1>
+        <p>Manage database content in a clean, searchable interface.</p>
+    </section>
+
+    <!-- DATABASE LINKS -->
+    <div class="admin-links">
+        <a href="/admin/database/cities">Cities Table</a>
+        <a href="/admin/database/countries">Countries Table</a>
+        <a href="/admin/database/regions">Regions Table</a>
+        <a href="/admin/database/facts">City Facts</a>
+        <a href="/admin/database/questions">Custom Questions</a>
+    </div>
+
+    <div class="admin-grid">
+
+        <!-- MANAGE CITIES -->
+        <section class="admin-card">
+            <h2>Manage Cities</h2>
+
+            <input type="text" id="citySearch" class="search-bar" placeholder="Search cities...">
+
+            <table class="admin-table" id="cityTable">
+                <thead>
+                    <tr>
+                        <th>City</th>
+                        <th>Country</th>
+                        <th>Region</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <% cities.forEach(function(city) { %>
+                        <tr>
+                            <td><%= city.CityName %></td>
+                            <td><%= city.CountryName %></td>
+                            <td><%= city.RegionName %></td>
+                            <td><%= city.IsActive ? "Active" : "Hidden" %></td>
+                            <td>
+                                <a href="/cities/<%= city.CityID %>">View</a>
+
+                                <% if (city.IsActive) { %>
+                                    <form action="/admin/cities/<%= city.CityID %>/hide" method="POST" class="inline-form">
+                                        <button type="submit">Hide</button>
+                                    </form>
+                                <% } else { %>
+                                    <form action="/admin/cities/<%= city.CityID %>/unhide" method="POST" class="inline-form">
+                                        <button type="submit">Unhide</button>
+                                    </form>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
         </section>
 
-        <% if (message) { %>
-            <div class="admin-message">
-                <%= message %>
-            </div>
-        <% } %>
+        <!-- QUICK ADD CITY -->
+        <section class="admin-card">
+            <h2>Quick Add City</h2>
 
-        <div class="admin-grid">
+            <form action="/admin/cities/add" method="POST" class="admin-form">
 
-            <section class="admin-card">
-                <h2>Add City</h2>
+                <input type="text" name="name" placeholder="City Name" required>
 
-                <form action="/admin/cities/add" method="POST" class="admin-form">
-                    <label for="cityName">City Name</label>
-                    <input type="text" id="cityName" name="cityName" required>
+                <select name="countryId" required>
+                    <option value="">Select Country</option>
+                    <% countries.forEach(function(c) { %>
+                        <option value="<%= c.CountryID %>">
+                            <%= c.CountryName %> (<%= c.RegionName %>)
+                        </option>
+                    <% }) %>
+                </select>
 
-                    <label for="countryId">Country</label>
-                    <select id="countryId" name="countryId" required>
-                        <option value="">Select a country</option>
-                        <% countries.forEach(function(country) { %>
-                            <option value="<%= country.CountryID %>">
-                                <%= country.CountryName %> (<%= country.RegionName %>)
-                            </option>
-                        <% }) %>
-                    </select>
+                <input type="text" name="population" placeholder="Population (e.g., 3,900,000)">
+                <input type="text" name="lat" placeholder="Latitude">
+                <input type="text" name="lng" placeholder="Longitude">
+                <input type="text" name="image" placeholder="Image URL">
 
-                    <label for="population">Population</label>
-                    <input type="number" id="population" name="population">
+                <button type="submit">Add City</button>
 
-                    <label for="description">Description</label>
-                    <textarea id="description" name="description" rows="4"></textarea>
+            </form>
+        </section>
 
-                    <label for="latitude">Latitude</label>
-                    <input type="text" id="latitude" name="latitude">
+    </div>
 
-                    <label for="longitude">Longitude</label>
-                    <input type="text" id="longitude" name="longitude">
+</main>
 
-                    <label for="cityImagePath">City Image Path</label>
-                    <input type="text" id="cityImagePath" name="cityImagePath">
+<script>
+document.getElementById("citySearch").addEventListener("keyup", function() {
+    let filter = this.value.toLowerCase();
+    let rows = document.querySelectorAll("#cityTable tbody tr");
 
-                    <button type="submit">Add City</button>
-                </form>
-            </section>
-
-            <section class="admin-card">
-                <h2>Add Fact</h2>
-
-                <form action="/admin/facts/add" method="POST" class="admin-form">
-                    <label for="factCityId">City</label>
-                    <select id="factCityId" name="cityId" required>
-                        <option value="">Select a city</option>
-                        <% cities.forEach(function(city) { %>
-                            <option value="<%= city.CityID %>">
-                                <%= city.CityName %>, <%= city.CountryName %>
-                            </option>
-                        <% }) %>
-                    </select>
-
-                    <label for="factType">Fact Type</label>
-                    <select id="factType" name="factType" required>
-                        <option value="QuickFact">QuickFact</option>
-                        <option value="FunFact">FunFact</option>
-                    </select>
-
-                    <label for="factSubtype">Fact Subtype</label>
-                    <input type="text" id="factSubtype" name="factSubtype" placeholder="General, Geography, Culture, Landmark, History..." required>
-
-                    <label for="factLabel">Fact Label</label>
-                    <input type="text" id="factLabel" name="factLabel" placeholder="Population, Demonym, Nickname..." required>
-
-                    <label for="factValue">Fact Value</label>
-                    <textarea id="factValue" name="factValue" rows="3" required></textarea>
-
-                    <label for="altAnswers">Alt Answers</label>
-                    <input type="text" id="altAnswers" name="altAnswers" placeholder="separate with | or comma">
-
-                    <label for="factImageType">Fact Image Type</label>
-                    <input type="text" id="factImageType" name="factImageType" placeholder="optional">
-
-                    <button type="submit">Add Fact</button>
-                </form>
-            </section>
-
-            <section class="admin-card">
-                <h2>Edit City Page Content</h2>
-
-                <form action="/admin/content/save" method="POST" class="admin-form" id="contentForm">
-                    <label for="contentCityId">Choose City</label>
-                    <select id="contentCityId" name="cityId" required onchange="window.location='/admin?cityId=' + this.value">
-                        <option value="">Select a city</option>
-                        <% cities.forEach(function(city) { %>
-                            <option value="<%= city.CityID %>" <%= selectedCity && String(selectedCity.CityID) === String(city.CityID) ? "selected" : "" %>>
-                                <%= city.CityName %>, <%= city.CountryName %>
-                            </option>
-                        <% }) %>
-                    </select>
-
-                    <input type="hidden" name="pageContent" id="pageContent">
-
-                    <div id="editor"><%- selectedPageContent || "" %></div>
-
-                    <button type="submit">Save Page Content</button>
-                </form>
-
-                <% if (selectedCity) { %>
-                    <hr style="margin: 24px 0;">
-
-                    <h3>Current City Data</h3>
-                    <p><strong>City:</strong> <%= selectedCity.CityName %>, <%= selectedCity.CountryName %></p>
-                    <p><strong>Region:</strong> <%= selectedCity.RegionName %></p>
-                    <p><strong>Description:</strong> <%= selectedCity.Description || "No description yet" %></p>
-
-                    <h3>Current Facts</h3>
-                    <% if (selectedFacts.length === 0) { %>
-                        <p>No facts yet for this city.</p>
-                    <% } else { %>
-                        <table class="facts-table">
-                            <thead>
-                                <tr>
-                                    <th>Type</th>
-                                    <th>Subtype</th>
-                                    <th>Label</th>
-                                    <th>Value</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% selectedFacts.forEach(function(fact) { %>
-                                    <tr>
-                                        <td><%= fact.FactType %></td>
-                                        <td><%= fact.FactSubtype %></td>
-                                        <td><%= fact.FactLabel %></td>
-                                        <td><%= fact.FactValue %></td>
-                                    </tr>
-                                <% }) %>
-                            </tbody>
-                        </table>
-                    <% } %>
-                <% } %>
-            </section>
-
-        </div>
-    </main>
-
-    <script>
-        var quill = new Quill("#editor", {
-            theme: "snow",
-            placeholder: "Write the city page here...",
-            modules: {
-                toolbar: [
-                    [{ header: [1, 2, 3, false] }],
-                    ["bold", "italic", "underline"],
-                    [{ color: [] }, { background: [] }],
-                    [{ list: "ordered" }, { list: "bullet" }],
-                    ["link"],
-                    ["clean"]
-                ]
-            }
-        });
-
-        document.getElementById("contentForm").onsubmit = function() {
-            document.getElementById("pageContent").value = quill.root.innerHTML;
-        };
-    </script>
+    rows.forEach(row => {
+        let text = row.innerText.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+    });
+});
+</script>
 
 </body>
 </html>

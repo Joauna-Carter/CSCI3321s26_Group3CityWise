@@ -5,81 +5,119 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leaderboard - CityWise</title>
     <link rel="stylesheet" href="/css/style.css">
+
+    <style>
+        .leaderboard-card {
+            background: white;
+            border: 1px solid #d6b98c;
+            border-radius: 10px;
+            padding: 24px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+            overflow-x: auto;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: auto;
+        }
+
+        .leaderboard-table th,
+        .leaderboard-table td {
+            padding: 12px 18px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            white-space: nowrap;
+        }
+
+        .leaderboard-table th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        .leaderboard-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .leaderboard-table tr:hover {
+            background-color: #f9f9f9;
+        }
+    </style>
 </head>
 <body>
 
-    <header class="navbar">
-        <div class="nav-left">
-            <a href="/" class="logo">CityWise</a>
-        </div>
+<header class="navbar">
+    <div class="nav-left">
+        <a href="/" class="logo">CityWise</a>
+    </div>
 
-        <div class="nav-center">
-            <a href="/" class="nav-tab">Home</a>
-            <a href="/cities" class="nav-tab">City Trivia</a>
-            <a href="/study" class="nav-tab">Study &amp; Quiz</a>
-            <a href="/map" class="nav-tab">Map</a>
-            <a href="/leaderboard" class="nav-tab">Leaderboard</a>
-            <a href="/statistics" class="nav-tab">Statistics</a>
+    <div class="nav-center">
+        <a href="/" class="nav-tab">Home</a>
+        <a href="/cities" class="nav-tab">City Trivia</a>
+        <a href="/study" class="nav-tab">Study &amp; Quiz</a>
+        <a href="/map" class="nav-tab">Map</a>
+        <a href="/leaderboard" class="nav-tab">Leaderboard</a>
+        <a href="/statistics" class="nav-tab">Statistics</a>
 
-            <% if (isAdmin) { %>
-                <a href="/admin" class="nav-tab">Admin</a>
-            <% } %>
-        </div>
+        <% if (isAdmin) { %>
+            <a href="/admin" class="nav-tab">Admin</a>
+        <% } %>
+    </div>
 
-        <div class="nav-right">
-            <% if (!isLoggedIn) { %>
-                <a href="/register">Create Account</a>
-                <span class="divider">|</span>
-                <a href="/login">Log In</a>
-            <% } else { %>
-                <a href="/profile"><%= username %></a>
-                <span class="divider">|</span>
-                <a href="/logout">Log Out</a>
-            <% } %>
-        </div>
-    </header>
+    <div class="nav-right">
+        <% if (!isLoggedIn) { %>
+            <a href="/register">Create Account</a>
+            <span class="divider">|</span>
+            <a href="/login">Log In</a>
+        <% } else { %>
+            <a href="/profile"><%= username %></a>
+            <span class="divider">|</span>
+            <a href="/logout">Log Out</a>
+        <% } %>
+    </div>
+</header>
 
-    <main class="home-container">
+<main class="home-container">
 
-        <section class="hero">
-            <h1>Leaderboard</h1>
-            <p>See how players rank based on quiz performance.</p>
-        </section>
+    <section class="hero">
+        <h1>Leaderboard</h1>
+        <p>See how players rank based on quiz performance.</p>
+    </section>
 
-        <section class="home-info">
-            <% if (!leaderboardRows || leaderboardRows.length === 0) { %>
-                <p>No leaderboard data is available yet.</p>
-            <% } else { %>
-                <div class="city-card">
-                    <table class="leaderboard-table">
-                        <thead>
+    <section class="home-info">
+        <% if (!leaderboardRows || leaderboardRows.length === 0) { %>
+            <p>No leaderboard data is available yet.</p>
+        <% } else { %>
+            <div class="leaderboard-card">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Username</th>
+                            <th>Total Points</th>
+                            <th>Quizzes Completed</th>
+                            <th>Average Score</th>
+                            <th>Best Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% leaderboardRows.forEach(function(row, index) { %>
                             <tr>
-                                <th>Rank</th>
-                                <th>Username</th>
-                                <th>Total Points</th>
-                                <th>Quizzes Completed</th>
-                                <th>Average Score</th>
-                                <th>Best Score</th>
+                                <td><%= index + 1 %></td>
+                                <td><%= row.Username %></td>
+                                <td><%= row.TotalQuizPoints %></td>
+                                <td><%= row.QuizzesCompleted %></td>
+                                <td><%= row.AverageScore %></td>
+                                <td><%= row.BestScore %></td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <% leaderboardRows.forEach(function(row, index) { %>
-                                <tr>
-                                    <td><%= index + 1 %></td>
-                                    <td><%= row.Username %></td>
-                                    <td><%= row.TotalQuizPoints %></td>
-                                    <td><%= row.QuizzesCompleted %></td>
-                                    <td><%= row.AverageScore %></td>
-                                    <td><%= row.BestScore %></td>
-                                </tr>
-                            <% }) %>
-                        </tbody>
-                    </table>
-                </div>
-            <% } %>
-        </section>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </section>
 
-    </main>
+</main>
 
 </body>
 </html>

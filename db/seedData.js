@@ -14,7 +14,6 @@ const dbConfig = {
   port: process.env.DB_PORT
 };
 
-// find file ignoring uppercase/lowercase
 function findFileInsensitive(fileName) {
   const files = fs.readdirSync(__dirname);
   const match = files.find((f) => f.toLowerCase() === fileName.toLowerCase());
@@ -26,7 +25,6 @@ function findFileInsensitive(fileName) {
   return path.join(__dirname, match);
 }
 
-// load CSV and normalize header names
 function loadCSV(filePath) {
   return new Promise((resolve, reject) => {
     const rows = [];
@@ -44,7 +42,6 @@ function loadCSV(filePath) {
   });
 }
 
-// convert blank values and NULL text to null
 function clean(value) {
   if (value === undefined || value === null) {
     return null;
@@ -59,6 +56,16 @@ function clean(value) {
   return trimmed;
 }
 
+function cleanNumber(value) {
+  const v = clean(value);
+
+  if (v === null) {
+    return null;
+  }
+
+  return String(v).replace(/,/g, "");
+}
+
 async function main() {
   const conn = await mysql.createConnection(dbConfig);
 
@@ -68,6 +75,10 @@ async function main() {
     // regions
     let rows = await loadCSV(findFileInsensitive("regions.csv"));
     for (const r of rows) {
+      if (!clean(r.regioncode) || !clean(r.regionname)) {
+        continue;
+      }
+
       await conn.execute(
         "INSERT INTO Regions (RegionCode, RegionName) VALUES (?, ?)",
         [
@@ -80,6 +91,10 @@ async function main() {
     // countries
     rows = await loadCSV(findFileInsensitive("countries.csv"));
     for (const r of rows) {
+      if (!clean(r.countryname) || !clean(r.regionid)) {
+        continue;
+      }
+
       await conn.execute(
         "INSERT INTO Countries (CountryName, RegionID, FlagImagePath) VALUES (?, ?, ?)",
         [
@@ -93,6 +108,10 @@ async function main() {
     // cities
     rows = await loadCSV(findFileInsensitive("cities.csv"));
     for (const r of rows) {
+      if (!clean(r.cityname) || !clean(r.countryid)) {
+        continue;
+      }
+
       await conn.execute(
         `INSERT INTO Cities
         (CityName, CountryID, Population, Description, Latitude, Longitude, CityImagePath)
@@ -100,7 +119,7 @@ async function main() {
         [
           clean(r.cityname),
           clean(r.countryid),
-          clean(r.population),
+          cleanNumber(r.population),
           clean(r.description),
           clean(r.latitude),
           clean(r.longitude),
@@ -110,11 +129,21 @@ async function main() {
     }
 
     // city facts
-    rows = await loadCSV(findFileInsensitive("citiesfacts.csv"));
+    rows = await loadCSV(findFileInsensitive("cityfacts.csv"));
     for (const r of rows) {
+      if (
+        !clean(r.cityid) ||
+        !clean(r.facttype) ||
+        !clean(r.factsubtype) ||
+        !clean(r.factlabel) ||
+        !clean(r.factvalue)
+      ) {
+        continue;
+      }
+
       await conn.execute(
         `INSERT INTO CityFacts
-        (CityID, FactType, FactSubtype, FactLabel, FactValue, AltAnswers, FactImageType)
+        (CityID, FactType, FactSubtype, FactLabel, FactValue, AltAnswers, FactImagePath)
         VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
           clean(r.cityid),
@@ -133,20 +162,25 @@ async function main() {
     for (const r of rows) {
       let qType = clean(r.questiontype);
 
-      if (qType && qType.toUpperCase() === "FIB") {
+      if (!qType || !clean(r.templatetext)) {
+        continue;
+      }
+
+      if (qType.toUpperCase() === "FIB") {
         qType = "FB";
       }
 
       await conn.execute(
         `INSERT INTO QuestionTemplates
-        (QuestionType, TemplateText, AnswerSource, RequiredFactType, RequiredFactSubtype, ImageSourceType)
-        VALUES (?, ?, ?, ?, ?, ?)`,
+        (QuestionType, TemplateText, AnswerSource, RequiredFactType, RequiredFactSubtype, RequiredFactLabel, ImageSourceType)
+        VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
           qType,
           clean(r.templatetext),
           clean(r.answersource),
           clean(r.requiredfacttype),
           clean(r.requiredfactsubtype),
+          clean(r.requiredfactlabel),
           clean(r.imagesourcetype)
         ]
       );

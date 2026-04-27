@@ -5,17 +5,21 @@ var db = require("../db/connection");
 // city list
 router.get("/cities", async function(req, res) {
     try {
+        var isAdmin = req.session.user && req.session.user.userType === "admin";
+
         var cityRows = await db.query(`
             SELECT
                 Cities.CityID,
                 Cities.CityName,
                 Cities.Description,
                 Cities.CityImagePath,
+                Cities.IsActive,
                 Countries.CountryName,
                 Regions.RegionName
             FROM Cities
             JOIN Countries ON Cities.CountryID = Countries.CountryID
             JOIN Regions ON Countries.RegionID = Regions.RegionID
+            ${isAdmin ? "" : "WHERE Cities.IsActive = TRUE"}
             ORDER BY Cities.CityName
         `);
 
@@ -32,6 +36,7 @@ router.get("/cities", async function(req, res) {
 router.get("/cities/:id", async function(req, res) {
     try {
         var cityId = req.params.id;
+        var isAdmin = req.session.user && req.session.user.userType === "admin";
 
         var cityRows = await db.query(`
             SELECT
@@ -42,6 +47,7 @@ router.get("/cities/:id", async function(req, res) {
                 Cities.Latitude,
                 Cities.Longitude,
                 Cities.CityImagePath,
+                Cities.IsActive,
                 Countries.CountryName,
                 Regions.RegionID,
                 Regions.RegionName
@@ -49,6 +55,7 @@ router.get("/cities/:id", async function(req, res) {
             JOIN Countries ON Cities.CountryID = Countries.CountryID
             JOIN Regions ON Countries.RegionID = Regions.RegionID
             WHERE Cities.CityID = ?
+            ${isAdmin ? "" : "AND Cities.IsActive = TRUE"}
             LIMIT 1
         `, [cityId]);
 
@@ -66,9 +73,11 @@ router.get("/cities/:id", async function(req, res) {
                 FactLabel,
                 FactValue,
                 AltAnswers,
-                FactImageType
+                FactImagePath,
+                IsActive
             FROM CityFacts
             WHERE CityID = ?
+            ${isAdmin ? "" : "AND IsActive = TRUE"}
             ORDER BY FactType, FactSubtype, FactLabel
         `, [cityId]);
 
@@ -80,18 +89,26 @@ router.get("/cities/:id", async function(req, res) {
         `, [cityId]);
 
         var facts = factRows[0];
+
         var quickFacts = facts.filter(function(fact) {
             return fact.FactType === "QuickFact";
         });
+
         var funFacts = facts.filter(function(fact) {
             return fact.FactType === "FunFact";
+        });
+
+        var factsWithImages = facts.filter(function(fact) {
+            return fact.FactImagePath && fact.FactImagePath !== "";
         });
 
         res.render("city", {
             city: city,
             quickFacts: quickFacts,
             funFacts: funFacts,
-            pageContent: pageRows[0].length > 0 ? pageRows[0][0].PageContent : null
+            factsWithImages: factsWithImages,
+            pageContent: pageRows[0].length > 0 ? pageRows[0][0].PageContent : null,
+            isAdmin: isAdmin
         });
     } catch (err) {
         console.error("City page error:", err);
@@ -102,10 +119,14 @@ router.get("/cities/:id", async function(req, res) {
 // map page
 router.get("/map", async function(req, res) {
     try {
+        var isAdmin = req.session.user && req.session.user.userType === "admin";
+
         var cityRows = await db.query(`
-            SELECT CityID, CityName, Latitude, Longitude
+            SELECT CityID, CityName, Latitude, Longitude, IsActive
             FROM Cities
-            WHERE Latitude IS NOT NULL AND Longitude IS NOT NULL
+            WHERE Latitude IS NOT NULL
+            AND Longitude IS NOT NULL
+            ${isAdmin ? "" : "AND IsActive = TRUE"}
             ORDER BY CityName
         `);
 
