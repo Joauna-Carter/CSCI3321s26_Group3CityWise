@@ -45,8 +45,8 @@
         <section class="hero">
             <h1>Study &amp; Quiz</h1>
             <p>
-                Choose how you want to learn. You can start a quiz or study with flashcards
-                using a single city, a region, or a random set of cities.
+                Choose a quiz or flashcard activity. Then choose one selection method:
+                single city, region, or random city count.
             </p>
         </section>
 
@@ -56,7 +56,7 @@
             <form method="POST" action="/study/start" class="city-card">
 
                 <p>
-                    <label for="mode"><strong>Mode</strong></label><br>
+                    <label for="mode"><strong>Activity Type</strong></label><br>
                     <select name="mode" id="mode">
                         <option value="quiz" <%= mode === "quiz" ? "selected" : "" %>>Quiz</option>
                         <option value="flashcards" <%= mode === "flashcards" ? "selected" : "" %>>Flashcards</option>
@@ -64,7 +64,7 @@
                 </p>
 
                 <p>
-                    <label for="cityId"><strong>Single City</strong></label><br>
+                    <label for="cityId"><strong>Single City Selection</strong></label><br>
                     <select name="cityId" id="cityId">
                         <option value="">None</option>
                         <% if (cities && cities.length > 0) { %>
@@ -75,10 +75,12 @@
                             <% }) %>
                         <% } %>
                     </select>
+                    <br>
+                    <small>Choose one city only. This disables region and random selection.</small>
                 </p>
 
                 <p>
-                    <label for="regionId"><strong>Region</strong></label><br>
+                    <label for="regionId"><strong>Region Selection</strong></label><br>
                     <select name="regionId" id="regionId">
                         <option value="">None</option>
                         <% if (regions && regions.length > 0) { %>
@@ -87,11 +89,15 @@
                             <% }) %>
                         <% } %>
                     </select>
+                    <br>
+                    <small>Choose a region. This disables single city and random selection.</small>
                 </p>
 
                 <p>
                     <label for="requestedCityCount"><strong>Random City Count</strong></label><br>
-                    <input type="number" name="requestedCityCount" id="requestedCityCount" min="1" max="20" value="5">
+                    <input type="number" name="requestedCityCount" id="requestedCityCount" min="1" max="20" value="">
+                    <br>
+                    <small>Enter a number of random cities. This disables single city and region selection.</small>
                 </p>
 
                 <p>
@@ -122,34 +128,30 @@
             <div class="city-grid">
 
                 <div class="city-card">
-                    <h3>Single City</h3>
+                    <h3>Single City Selection</h3>
                     <p>
-                        Pick one city to focus on that city’s facts, quiz questions,
-                        and flashcards.
+                        Choose one city to focus the quiz or flashcard activity on that city’s facts.
                     </p>
                 </div>
 
                 <div class="city-card">
-                    <h3>Region Mode</h3>
+                    <h3>Region Selection</h3>
                     <p>
-                        Choose a region and let CityWise select cities from that area
-                        for a broader activity.
+                        Choose one region and CityWise will use cities from that region for the activity.
                     </p>
                 </div>
 
                 <div class="city-card">
-                    <h3>Random Mode</h3>
+                    <h3>Random City Selection</h3>
                     <p>
-                        Set a number of cities and let the system build a random quiz
-                        or flashcard session.
+                        Enter a city count and CityWise will randomly select that many cities for the activity.
                     </p>
                 </div>
 
                 <div class="city-card">
                     <h3>Difficulty</h3>
                     <p>
-                        Easy gives fewer questions, while medium and hard increase
-                        the number of questions in the quiz.
+                        Difficulty controls the number of questions. Easy has fewer questions, while medium and hard include more.
                     </p>
                 </div>
 
@@ -157,6 +159,39 @@
         </section>
 
     </main>
+
+    <script>
+        var citySelect = document.getElementById("cityId");
+        var regionSelect = document.getElementById("regionId");
+        var randomInput = document.getElementById("requestedCityCount");
+
+        function updateSelectionFields() {
+            var hasCity = citySelect.value !== "";
+            var hasRegion = regionSelect.value !== "";
+            var hasRandom = randomInput.value !== "" && Number(randomInput.value) > 0;
+
+            citySelect.disabled = false;
+            regionSelect.disabled = false;
+            randomInput.disabled = false;
+
+            if (hasCity) {
+                regionSelect.disabled = true;
+                randomInput.disabled = true;
+            } else if (hasRegion) {
+                citySelect.disabled = true;
+                randomInput.disabled = true;
+            } else if (hasRandom) {
+                citySelect.disabled = true;
+                regionSelect.disabled = true;
+            }
+        }
+
+        citySelect.addEventListener("change", updateSelectionFields);
+        regionSelect.addEventListener("change", updateSelectionFields);
+        randomInput.addEventListener("input", updateSelectionFields);
+
+        updateSelectionFields();
+    </script>
 
 </body>
 </html>

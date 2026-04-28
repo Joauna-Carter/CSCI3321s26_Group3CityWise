@@ -43,7 +43,7 @@
 
         <section class="hero">
             <h1>Statistics</h1>
-            <p>View website statistics and your personal progress.</p>
+            <p>View website totals, quiz performance, points, percentages, and personal progress.</p>
         </section>
 
         <section class="home-info">
@@ -52,45 +52,223 @@
             <% if (!websiteStats) { %>
                 <p>No website statistics are available yet.</p>
             <% } else { %>
+
+                <h3>User Totals</h3>
                 <div class="city-grid">
                     <div class="city-card">
                         <h3>Total Users</h3>
                         <p><%= websiteStats.TotalUsers %></p>
+                        <small>Total number of accounts in the system, including active and deleted users.</small>
                     </div>
 
                     <div class="city-card">
                         <h3>Total Admins</h3>
                         <p><%= websiteStats.TotalAdmins %></p>
+                        <small>Number of users with administrator access.</small>
                     </div>
 
                     <div class="city-card">
                         <h3>Total Regular Users</h3>
                         <p><%= websiteStats.TotalRegularUsers %></p>
+                        <small>Number of normal user accounts that are not admins.</small>
                     </div>
 
                     <div class="city-card">
-                        <h3>Total Quizzes Completed</h3>
-                        <p><%= websiteStats.TotalQuizzesCompleted %></p>
+                        <h3>Total Active Users</h3>
+                        <p><%= websiteStats.TotalActiveUsers %></p>
+                        <small>Number of users whose accounts are not soft-deleted.</small>
                     </div>
 
+                    <div class="city-card">
+                        <h3>Total Deleted Users</h3>
+                        <p><%= websiteStats.TotalDeletedUsers %></p>
+                        <small>Number of users marked as deleted but still kept in the database.</small>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px;">Score-Based Stats</h3>
+                <div class="city-grid">
                     <div class="city-card">
                         <h3>Average Quiz Score</h3>
                         <p><%= Number(websiteStats.AverageQuizScore || 0).toFixed(2) %></p>
+                        <small>Average score from all completed quiz attempts.</small>
                     </div>
 
                     <div class="city-card">
                         <h3>Highest Quiz Score</h3>
                         <p><%= websiteStats.HighestQuizScore %></p>
+                        <small>Highest score earned on a single completed quiz attempt.</small>
                     </div>
 
                     <div class="city-card">
-                        <h3>Most Popular Quiz Mode</h3>
-                        <p><%= websiteStats.MostPopularQuizMode || "None" %></p>
+                        <h3>Lowest Quiz Score</h3>
+                        <p><%= websiteStats.LowestQuizScore %></p>
+                        <small>Lowest score earned on a single completed quiz attempt.</small>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px;">Point-Based Stats</h3>
+                <div class="city-grid">
+                    <div class="city-card">
+                        <h3>Total Quiz Points</h3>
+                        <p><%= websiteStats.TotalQuizPoints %></p>
+                        <small>Total accumulated quiz points earned by all users.</small>
                     </div>
 
+                    <div class="city-card">
+                        <h3>Top Player Total Points</h3>
+                        <p><%= websiteStats.TopPlayerTotalPoints %></p>
+                        <small>Highest total points earned by one user on the leaderboard.</small>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Average Points Per User</h3>
+                        <p><%= Number(websiteStats.AveragePointsPerUser || 0).toFixed(2) %></p>
+                        <small>Average accumulated points among users who completed at least one quiz.</small>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px;">Quiz Activity Totals</h3>
+                <div class="city-grid">
+                    <div class="city-card">
+                        <h3>Total Quiz Attempts</h3>
+                        <p><%= websiteStats.TotalQuizAttempts %></p>
+                        <small>Total number of quiz attempts, including completed and abandoned attempts.</small>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Total Quizzes Completed</h3>
+                        <p><%= websiteStats.TotalQuizzesCompleted %></p>
+                        <small>Number of quiz attempts finished by users.</small>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Total Quizzes Abandoned</h3>
+                        <p><%= websiteStats.TotalQuizzesAbandoned %></p>
+                        <small>Number of quiz attempts started but not completed.</small>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Total Timed Quizzes</h3>
+                        <p><%= websiteStats.TotalTimedQuizzes %></p>
+                        <small>Number of quiz attempts completed or started in timed mode.</small>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Total Untimed Quizzes</h3>
+                        <p><%= websiteStats.TotalUntimedQuizzes %></p>
+                        <small>Number of quiz attempts completed or started without timed mode.</small>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px;">Flashcard Stats</h3>
+                <div class="city-grid">
                     <div class="city-card">
                         <h3>Total Flashcard Sessions</h3>
                         <p><%= websiteStats.TotalFlashcardSessions %></p>
+                        <small>Total number of times flashcard study sessions were started.</small>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Users Who Used Flashcards</h3>
+                        <p><%= websiteStats.UsersWhoUsedFlashcards %></p>
+                        <small>Number of unique users who used flashcards at least once.</small>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px;">Mode and Difficulty Stats</h3>
+                <div class="city-grid">
+                    <div class="city-card">
+                        <h3>Most Popular Quiz Mode</h3>
+                        <p><%= websiteStats.MostPopularQuizMode || "None" %></p>
+                        <small>The quiz mode used most often in completed quiz attempts.</small>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Total Easy Quizzes</h3>
+                        <p><%= websiteStats.TotalEasyQuizzes %></p>
+                        <small>Number of completed quiz attempts marked as easy.</small>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Total Medium Quizzes</h3>
+                        <p><%= websiteStats.TotalMediumQuizzes %></p>
+                        <small>Number of completed quiz attempts marked as medium.</small>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Total Hard Quizzes</h3>
+                        <p><%= websiteStats.TotalHardQuizzes %></p>
+                        <small>Number of completed quiz attempts marked as hard.</small>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px;">Percentage Stats</h3>
+                <div class="city-grid">
+                    <div class="city-card">
+                        <h3>Admin %</h3>
+                        <p><%= Number(websiteStats.AdminPercent || 0).toFixed(2) %>%</p>
+                        <small>Percentage of all users who are admins.</small>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Regular User %</h3>
+                        <p><%= Number(websiteStats.RegularUserPercent || 0).toFixed(2) %>%</p>
+                        <small>Percentage of all users who are regular users.</small>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Active User %</h3>
+                        <p><%= Number(websiteStats.ActiveUserPercent || 0).toFixed(2) %>%</p>
+                        <small>Percentage of accounts that are not soft-deleted.</small>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Deleted User %</h3>
+                        <p><%= Number(websiteStats.DeletedUserPercent || 0).toFixed(2) %>%</p>
+                        <small>Percentage of accounts that are soft-deleted.</small>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Quiz Participation Rate</h3>
+                        <p><%= Number(websiteStats.QuizParticipationRate || 0).toFixed(2) %>%</p>
+                        <small>Percentage of active users who completed at least one quiz.</small>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Flashcard Usage Rate</h3>
+                        <p><%= Number(websiteStats.FlashcardUsageRate || 0).toFixed(2) %>%</p>
+                        <small>Percentage of active users who used flashcards at least once.</small>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Inactive User Rate</h3>
+                        <p><%= Number(websiteStats.InactiveUserRate || 0).toFixed(2) %>%</p>
+                        <small>Percentage of active users who have not completed quizzes or used flashcards.</small>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Completed Quiz %</h3>
+                        <p><%= Number(websiteStats.CompletedQuizPercent || 0).toFixed(2) %>%</p>
+                        <small>Percentage of all quiz attempts that were completed.</small>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Abandoned Quiz %</h3>
+                        <p><%= Number(websiteStats.AbandonedQuizPercent || 0).toFixed(2) %>%</p>
+                        <small>Percentage of all quiz attempts that were abandoned.</small>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Timed Quiz %</h3>
+                        <p><%= Number(websiteStats.TimedQuizPercent || 0).toFixed(2) %>%</p>
+                        <small>Percentage of all quiz attempts that used timed mode.</small>
+                    </div>
+
+                    <div class="city-card">
+                        <h3>Untimed Quiz %</h3>
+                        <p><%= Number(websiteStats.UntimedQuizPercent || 0).toFixed(2) %>%</p>
+                        <small>Percentage of all quiz attempts that did not use timed mode.</small>
                     </div>
                 </div>
             <% } %>
@@ -106,36 +284,43 @@
                     <div class="city-card">
                         <h3>Quizzes Completed</h3>
                         <p><%= userStats.QuizzesCompleted %></p>
+                        <small>Number of quizzes you personally completed.</small>
                     </div>
 
                     <div class="city-card">
                         <h3>Average Score</h3>
                         <p><%= Number(userStats.AverageScore || 0).toFixed(2) %></p>
+                        <small>Your average score across completed quiz attempts.</small>
                     </div>
 
                     <div class="city-card">
                         <h3>Best Score</h3>
                         <p><%= userStats.BestScore %></p>
+                        <small>Your highest score on a single completed quiz attempt.</small>
                     </div>
 
                     <div class="city-card">
                         <h3>Total Quiz Points</h3>
                         <p><%= userStats.TotalQuizPoints %></p>
+                        <small>Your accumulated quiz points across all completed quizzes.</small>
                     </div>
 
                     <div class="city-card">
                         <h3>Flashcard Sessions Used</h3>
                         <p><%= userStats.FlashcardSessionsUsed %></p>
+                        <small>Number of flashcard study sessions you started.</small>
                     </div>
 
                     <div class="city-card">
                         <h3>Most Used Quiz Mode</h3>
                         <p><%= userStats.MostDoneQuizMode || "N/A" %></p>
+                        <small>The quiz mode you have used most often.</small>
                     </div>
                 </div>
 
                 <div class="city-card" style="margin-top: 20px;">
                     <p><strong>Last Quiz Attempted:</strong> <%= userStats.LastQuizAttemptedAt || "N/A" %></p>
+                    <small>The most recent date and time when you attempted a quiz.</small>
                 </div>
             <% } %>
         </section>
