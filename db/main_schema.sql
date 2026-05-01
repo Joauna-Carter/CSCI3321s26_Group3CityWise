@@ -5,7 +5,8 @@ USE citywise;
 CREATE TABLE Regions (
     RegionID INT AUTO_INCREMENT PRIMARY KEY,
     RegionCode VARCHAR(10) NOT NULL UNIQUE,
-    RegionName VARCHAR(100) NOT NULL UNIQUE
+    RegionName VARCHAR(100) NOT NULL UNIQUE,
+    IsActive BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE Countries (
@@ -13,6 +14,7 @@ CREATE TABLE Countries (
     CountryName VARCHAR(100) NOT NULL UNIQUE,
     RegionID INT NOT NULL,
     FlagImagePath TEXT NULL,
+    IsActive BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT fk_countries_region
         FOREIGN KEY (RegionID) REFERENCES Regions(RegionID)
 );
@@ -39,6 +41,7 @@ CREATE TABLE Users (
     UserType VARCHAR(20) NOT NULL,
     CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     IsDeleted BOOLEAN NOT NULL DEFAULT FALSE,
+    IsActive BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT chk_users_usertype
         CHECK (UserType IN ('user', 'admin'))
 );
@@ -51,6 +54,7 @@ CREATE TABLE UserProfiles (
     ProfileImagePath TEXT NULL,
     FavoriteRegionID INT NULL,
     FavoriteCityID INT NULL,
+    IsActive BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT fk_profiles_user
         FOREIGN KEY (UserID) REFERENCES Users(UserID),
     CONSTRAINT fk_profiles_region
@@ -78,6 +82,7 @@ CREATE TABLE CityPageContent (
     CityID INT NOT NULL UNIQUE,
     PageContent LONGTEXT NULL,
     LastUpdated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    IsActive BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT fk_citypagecontent_city
         FOREIGN KEY (CityID) REFERENCES Cities(CityID)
 );
@@ -89,6 +94,7 @@ CREATE TABLE CityPageRevisions (
     PageContent LONGTEXT NOT NULL,
     EditSummary TEXT NULL,
     CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    IsActive BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT fk_citypagerevisions_city
         FOREIGN KEY (CityID) REFERENCES Cities(CityID),
     CONSTRAINT fk_citypagerevisions_user
@@ -104,6 +110,7 @@ CREATE TABLE CityPageImages (
     Caption TEXT NULL,
     UploadedByUserID INT NULL,
     UploadedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    IsActive BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT fk_citypageimages_city
         FOREIGN KEY (CityID) REFERENCES Cities(CityID),
     CONSTRAINT fk_citypageimages_user
@@ -135,8 +142,8 @@ CREATE TABLE CustomQuestions (
     WrongAnswer3 TEXT NULL,
     Explanation TEXT NULL,
     Difficulty VARCHAR(20) NULL,
-    IsActive BOOLEAN NOT NULL DEFAULT TRUE,
     ImagePath TEXT NULL,
+    IsActive BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT fk_customquestions_city
         FOREIGN KEY (CityID) REFERENCES Cities(CityID),
     CONSTRAINT chk_customquestions_qtype
@@ -154,7 +161,8 @@ CREATE TABLE QuizAttempts (
     SelectedRegionID INT NULL,
     RequestedCityCount INT NULL,
     SelectedCityID INT NULL,
-    Status VARCHAR(20) NOT NULL DEFAULT 'completed',
+    Status VARCHAR(20) NOT NULL DEFAULT 'in_progress',
+    IsActive BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT fk_quizattempts_user
         FOREIGN KEY (UserID) REFERENCES Users(UserID),
     CONSTRAINT fk_quizattempts_region
@@ -205,6 +213,7 @@ CREATE TABLE FlashcardSessions (
     SelectedRegionID INT NULL,
     RequestedCityCount INT NULL,
     SelectedCityID INT NULL,
+    IsActive BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT fk_flashcardsessions_user
         FOREIGN KEY (UserID) REFERENCES Users(UserID),
     CONSTRAINT fk_flashcardsessions_region
@@ -244,7 +253,7 @@ CREATE TABLE Leaderboard (
     UserID INT NOT NULL UNIQUE,
     TotalQuizPoints INT NOT NULL DEFAULT 0,
     QuizzesCompleted INT NOT NULL DEFAULT 0,
-    AverageScore DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+    AverageScore DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     BestScore INT NOT NULL DEFAULT 0,
     LastUpdated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_leaderboard_user
@@ -256,7 +265,7 @@ CREATE TABLE UserStatistics (
     UserID INT NOT NULL UNIQUE,
     LastQuizAttemptedAt DATETIME NULL,
     QuizzesCompleted INT NOT NULL DEFAULT 0,
-    AverageScore DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+    AverageScore DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     MostDoneQuizMode VARCHAR(50) NULL,
     BestScore INT NOT NULL DEFAULT 0,
     TotalQuizPoints INT NOT NULL DEFAULT 0,
@@ -272,9 +281,13 @@ CREATE TABLE WebsiteStatistics (
     TotalAdmins INT NOT NULL DEFAULT 0,
     TotalRegularUsers INT NOT NULL DEFAULT 0,
     TotalQuizzesCompleted INT NOT NULL DEFAULT 0,
-    AverageQuizScore DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+    AverageQuizScore DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     HighestQuizScore INT NOT NULL DEFAULT 0,
     MostPopularQuizMode VARCHAR(50) NULL,
     TotalFlashcardSessions INT NOT NULL DEFAULT 0,
     LastUpdated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_cities_active ON Cities(IsActive);
+CREATE INDEX idx_countries_active ON Countries(IsActive);
+CREATE INDEX idx_regions_active ON Regions(IsActive);

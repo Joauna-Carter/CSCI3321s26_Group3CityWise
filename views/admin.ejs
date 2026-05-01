@@ -1,49 +1,41 @@
+<!-- admin.ejs -->
+<!-- Renders the admin dashboard with links to every database table available to admins -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Sets page character encoding -->
     <meta charset="UTF-8">
+
+    <!-- Makes layout responsive on different screen sizes -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Browser tab title -->
     <title>Admin - CityWise</title>
+
+    <!-- Loads shared site styling -->
     <link rel="stylesheet" href="/css/style.css">
 
     <style>
+        /* Grid layout for database table cards */
         .admin-grid {
             display: grid;
-            gap: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
         }
 
+        /* Card for each database table */
         .admin-card {
             background: white;
             border: 1px solid #ddd;
             border-radius: 12px;
-            padding: 20px;
+            padding: 18px;
         }
 
-        .admin-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 12px;
-        }
-
-        .admin-table th,
-        .admin-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-
-        .inline-form {
-            display: inline;
-        }
-
-        .search-bar {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-
-        .admin-links a {
+        /* Button-style table links */
+        .admin-card a {
             display: inline-block;
-            margin-right: 10px;
+            margin-top: 8px;
             padding: 8px 12px;
             background: #1f2937;
             color: white;
@@ -51,39 +43,32 @@
             border-radius: 8px;
         }
 
-        .admin-links a:hover {
+        /* Darkens table link on hover */
+        .admin-card a:hover {
             background: #374151;
         }
 
-        .admin-form input,
-        .admin-form select {
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-            padding: 8px;
-        }
-
-        .admin-form button {
-            padding: 10px 14px;
-            background: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .admin-form button:hover {
-            background: #0056b3;
+        /* Notice explaining hide behavior */
+        .admin-note {
+            background: #fff8e6;
+            border: 1px solid #e0c67a;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
+
 <body>
 
+<!-- Main navigation bar -->
 <header class="navbar">
+    <!-- Site logo -->
     <div class="nav-left">
         <a href="/" class="logo">CityWise</a>
     </div>
 
+    <!-- Main navigation links -->
     <div class="nav-center">
         <a href="/" class="nav-tab">Home</a>
         <a href="/cities" class="nav-tab">City Trivia</a>
@@ -94,6 +79,7 @@
         <a href="/admin" class="nav-tab">Admin</a>
     </div>
 
+    <!-- Logged-in admin controls -->
     <div class="nav-right">
         <a href="/profile"><%= username %></a>
         <span class="divider">|</span>
@@ -101,109 +87,40 @@
     </div>
 </header>
 
+<!-- Main dashboard content -->
 <main class="home-container">
 
+    <!-- Dashboard heading -->
     <section class="hero">
         <h1>Admin Dashboard</h1>
-        <p>Manage database content in a clean, searchable interface.</p>
+        <p>Manage all CityWise database tables using searchable table editors.</p>
     </section>
 
-    <!-- DATABASE LINKS -->
-    <div class="admin-links">
-        <a href="/admin/database/cities">Cities Table</a>
-        <a href="/admin/database/countries">Countries Table</a>
-        <a href="/admin/database/regions">Regions Table</a>
-        <a href="/admin/database/facts">City Facts</a>
-        <a href="/admin/database/questions">Custom Questions</a>
+    <!-- Explains which tables can hide rows -->
+    <div class="admin-note">
+        Rows are hidden using IsActive when the table supports it. System and relationship tables are view/edit only and do not use hide controls.
     </div>
 
-    <div class="admin-grid">
+    <!-- Builds one card per table from adminRoutes.js table metadata -->
+    <section class="admin-grid">
+        <% tables.forEach(function(table) { %>
+            <div class="admin-card">
+                <!-- User-friendly table label -->
+                <h2><%= table.label %></h2>
 
-        <!-- MANAGE CITIES -->
-        <section class="admin-card">
-            <h2>Manage Cities</h2>
+                <!-- Actual database table name -->
+                <p><strong>Database table:</strong> <%= table.table %></p>
 
-            <input type="text" id="citySearch" class="search-bar" placeholder="Search cities...">
+                <!-- Shows whether the table supports IsActive hide/unhide -->
+                <p><strong>Hide support:</strong> <%= table.hasIsActive ? "Yes" : "No" %></p>
 
-            <table class="admin-table" id="cityTable">
-                <thead>
-                    <tr>
-                        <th>City</th>
-                        <th>Country</th>
-                        <th>Region</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <% cities.forEach(function(city) { %>
-                        <tr>
-                            <td><%= city.CityName %></td>
-                            <td><%= city.CountryName %></td>
-                            <td><%= city.RegionName %></td>
-                            <td><%= city.IsActive ? "Active" : "Hidden" %></td>
-                            <td>
-                                <a href="/cities/<%= city.CityID %>">View</a>
-
-                                <% if (city.IsActive) { %>
-                                    <form action="/admin/cities/<%= city.CityID %>/hide" method="POST" class="inline-form">
-                                        <button type="submit">Hide</button>
-                                    </form>
-                                <% } else { %>
-                                    <form action="/admin/cities/<%= city.CityID %>/unhide" method="POST" class="inline-form">
-                                        <button type="submit">Unhide</button>
-                                    </form>
-                                <% } %>
-                            </td>
-                        </tr>
-                    <% }) %>
-                </tbody>
-            </table>
-        </section>
-
-        <!-- QUICK ADD CITY -->
-        <section class="admin-card">
-            <h2>Quick Add City</h2>
-
-            <form action="/admin/cities/add" method="POST" class="admin-form">
-
-                <input type="text" name="name" placeholder="City Name" required>
-
-                <select name="countryId" required>
-                    <option value="">Select Country</option>
-                    <% countries.forEach(function(c) { %>
-                        <option value="<%= c.CountryID %>">
-                            <%= c.CountryName %> (<%= c.RegionName %>)
-                        </option>
-                    <% }) %>
-                </select>
-
-                <input type="text" name="population" placeholder="Population (e.g., 3,900,000)">
-                <input type="text" name="lat" placeholder="Latitude">
-                <input type="text" name="lng" placeholder="Longitude">
-                <input type="text" name="image" placeholder="Image URL">
-
-                <button type="submit">Add City</button>
-
-            </form>
-        </section>
-
-    </div>
+                <!-- Opens the generic table editor for this table -->
+                <a href="/admin/database/<%= table.slug %>">Open Table</a>
+            </div>
+        <% }) %>
+    </section>
 
 </main>
-
-<script>
-document.getElementById("citySearch").addEventListener("keyup", function() {
-    let filter = this.value.toLowerCase();
-    let rows = document.querySelectorAll("#cityTable tbody tr");
-
-    rows.forEach(row => {
-        let text = row.innerText.toLowerCase();
-        row.style.display = text.includes(filter) ? "" : "none";
-    });
-});
-</script>
 
 </body>
 </html>

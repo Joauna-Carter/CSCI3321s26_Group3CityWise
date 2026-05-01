@@ -1,169 +1,340 @@
-var express = require("express");
-var router = express.Router();
-var db = require("../db/connection");
-var auth = require("../middleware/auth");
+// adminRoutes.js
+// Handles admin dashboard, safe database editing rules, row viewing, row hiding, and controlled row adding
 
-// helper to get current admin user id
-function getSessionUserId(req) {
-    if (!req.session.user) {
-        return null;
-    }
+var express = require("express"); // Express framework
+var router = express.Router(); // Router for admin routes
+var db = require("../db/connection"); // Database connection
+var auth = require("../middleware/auth"); // Admin middleware
 
-    return (
-        req.session.user.userId ||
-        req.session.user.UserID ||
-        req.session.user.id ||
-        req.session.user.UserId ||
-        null
-    );
+// Defines every admin-visible table and what admins are allowed to change
+function getAdminTables() {
+    return [
+        {
+            slug: "regions",
+            label: "Regions",
+            table: "Regions",
+            keyFields: ["RegionID"],
+            hasIsActive: true,
+            canAdd: true,
+            editableFields: ["RegionCode", "RegionName", "IsActive"],
+            foreignKeys: {}
+        },
+        {
+            slug: "countries",
+            label: "Countries",
+            table: "Countries",
+            keyFields: ["CountryID"],
+            hasIsActive: true,
+            canAdd: true,
+            editableFields: ["CountryName", "RegionID", "FlagImagePath", "IsActive"],
+            foreignKeys: { RegionID: "Regions" }
+        },
+        {
+            slug: "cities",
+            label: "Cities",
+            table: "Cities",
+            keyFields: ["CityID"],
+            hasIsActive: true,
+            canAdd: true,
+            editableFields: ["CityName", "CountryID", "Population", "Description", "Latitude", "Longitude", "CityImagePath", "IsActive"],
+            foreignKeys: { CountryID: "Countries" }
+        },
+        {
+            slug: "users",
+            label: "Users",
+            table: "Users",
+            keyFields: ["UserID"],
+            hasIsActive: true,
+            canAdd: false,
+            editableFields: ["UserType", "IsDeleted", "IsActive"],
+            foreignKeys: {}
+        },
+        {
+            slug: "userprofiles",
+            label: "User Profiles",
+            table: "UserProfiles",
+            keyFields: ["ProfileID"],
+            hasIsActive: true,
+            canAdd: false,
+            editableFields: ["DisplayName", "Bio", "ProfileImagePath", "FavoriteRegionID", "FavoriteCityID", "IsActive"],
+            foreignKeys: { UserID: "Users", FavoriteRegionID: "Regions", FavoriteCityID: "Cities" }
+        },
+        {
+            slug: "cityfacts",
+            label: "City Facts",
+            table: "CityFacts",
+            keyFields: ["FactID"],
+            hasIsActive: true,
+            canAdd: true,
+            editableFields: ["CityID", "FactType", "FactSubtype", "FactLabel", "FactValue", "AltAnswers", "FactImagePath", "IsActive"],
+            foreignKeys: { CityID: "Cities" }
+        },
+        {
+            slug: "citypagecontent",
+            label: "City Page Content",
+            table: "CityPageContent",
+            keyFields: ["CityPageContentID"],
+            hasIsActive: true,
+            canAdd: true,
+            editableFields: ["CityID", "PageContent", "IsActive"],
+            foreignKeys: { CityID: "Cities" }
+        },
+        {
+            slug: "citypagerevisions",
+            label: "City Page Revisions",
+            table: "CityPageRevisions",
+            keyFields: ["RevisionID"],
+            hasIsActive: true,
+            canAdd: false,
+            editableFields: ["IsActive"],
+            foreignKeys: { CityID: "Cities", EditedByUserID: "Users" }
+        },
+        {
+            slug: "citypageimages",
+            label: "City Page Images",
+            table: "CityPageImages",
+            keyFields: ["CityPageImageID"],
+            hasIsActive: true,
+            canAdd: true,
+            editableFields: ["CityID", "ImagePath", "AltText", "Caption", "UploadedByUserID", "IsActive"],
+            foreignKeys: { CityID: "Cities", UploadedByUserID: "Users" }
+        },
+        {
+            slug: "questiontemplates",
+            label: "Question Templates",
+            table: "QuestionTemplates",
+            keyFields: ["TemplateID"],
+            hasIsActive: true,
+            canAdd: true,
+            editableFields: ["QuestionType", "TemplateText", "AnswerSource", "RequiredFactType", "RequiredFactSubtype", "RequiredFactLabel", "ImageSourceType", "IsActive"],
+            foreignKeys: {}
+        },
+        {
+            slug: "customquestions",
+            label: "Custom Questions",
+            table: "CustomQuestions",
+            keyFields: ["CustomQuestionID"],
+            hasIsActive: true,
+            canAdd: true,
+            editableFields: ["CityID", "QuestionType", "QuestionText", "CorrectAnswer", "WrongAnswer1", "WrongAnswer2", "WrongAnswer3", "Explanation", "Difficulty", "ImagePath", "IsActive"],
+            foreignKeys: { CityID: "Cities" }
+        },
+        {
+            slug: "quizattempts",
+            label: "Quiz Attempts",
+            table: "QuizAttempts",
+            keyFields: ["QuizAttemptID"],
+            hasIsActive: true,
+            canAdd: false,
+            editableFields: ["Status", "IsActive"],
+            foreignKeys: { UserID: "Users", SelectedRegionID: "Regions", SelectedCityID: "Cities" }
+        },
+        {
+            slug: "quizattemptcities",
+            label: "Quiz Attempt Cities",
+            table: "QuizAttemptCities",
+            keyFields: ["QuizAttemptID", "CityID"],
+            hasIsActive: false,
+            canAdd: false,
+            editableFields: [],
+            foreignKeys: { QuizAttemptID: "QuizAttempts", CityID: "Cities" }
+        },
+        {
+            slug: "quizattemptquestions",
+            label: "Quiz Attempt Questions",
+            table: "QuizAttemptQuestions",
+            keyFields: ["QuizAttemptQuestionID"],
+            hasIsActive: false,
+            canAdd: false,
+            editableFields: [],
+            foreignKeys: { QuizAttemptID: "QuizAttempts", TemplateID: "QuestionTemplates", CustomQuestionID: "CustomQuestions", CityID: "Cities" }
+        },
+        {
+            slug: "flashcardsessions",
+            label: "Flashcard Sessions",
+            table: "FlashcardSessions",
+            keyFields: ["FlashcardSessionID"],
+            hasIsActive: true,
+            canAdd: false,
+            editableFields: ["IsActive"],
+            foreignKeys: { UserID: "Users", SelectedRegionID: "Regions", SelectedCityID: "Cities" }
+        },
+        {
+            slug: "flashcardsessioncities",
+            label: "Flashcard Session Cities",
+            table: "FlashcardSessionCities",
+            keyFields: ["FlashcardSessionID", "CityID"],
+            hasIsActive: false,
+            canAdd: false,
+            editableFields: [],
+            foreignKeys: { FlashcardSessionID: "FlashcardSessions", CityID: "Cities" }
+        },
+        {
+            slug: "flashcardsessioncards",
+            label: "Flashcard Session Cards",
+            table: "FlashcardSessionCards",
+            keyFields: ["FlashcardCardID"],
+            hasIsActive: false,
+            canAdd: false,
+            editableFields: [],
+            foreignKeys: { FlashcardSessionID: "FlashcardSessions", CityID: "Cities", FactID: "CityFacts" }
+        },
+        {
+            slug: "leaderboard",
+            label: "Leaderboard",
+            table: "Leaderboard",
+            keyFields: ["LeaderboardID"],
+            hasIsActive: false,
+            canAdd: false,
+            editableFields: [],
+            foreignKeys: { UserID: "Users" }
+        },
+        {
+            slug: "userstatistics",
+            label: "User Statistics",
+            table: "UserStatistics",
+            keyFields: ["UserStatsID"],
+            hasIsActive: false,
+            canAdd: false,
+            editableFields: [],
+            foreignKeys: { UserID: "Users" }
+        },
+        {
+            slug: "websitestatistics",
+            label: "Website Statistics",
+            table: "WebsiteStatistics",
+            keyFields: ["WebsiteStatsID"],
+            hasIsActive: false,
+            canAdd: false,
+            editableFields: [],
+            foreignKeys: {}
+        }
+    ];
 }
 
-// helper for allowed admin database tables
+// Gets table rules from URL slug
 function getTableInfo(tableParam) {
-    var tables = {
-        cities: { table: "Cities", primaryKey: "CityID" },
-        countries: { table: "Countries", primaryKey: "CountryID" },
-        regions: { table: "Regions", primaryKey: "RegionID" },
-        facts: { table: "CityFacts", primaryKey: "FactID" },
-        cityfacts: { table: "CityFacts", primaryKey: "FactID" },
-        customquestions: { table: "CustomQuestions", primaryKey: "CustomQuestionID" },
-        questions: { table: "CustomQuestions", primaryKey: "CustomQuestionID" },
-        questiontemplates: { table: "QuestionTemplates", primaryKey: "TemplateID" },
-        users: { table: "Users", primaryKey: "UserID" }
+    return getAdminTables().find(function(table) {
+        return table.slug === String(tableParam).toLowerCase();
+    }) || null;
+}
+
+// Escapes table and column names after whitelist validation
+function q(name) {
+    return "`" + String(name).replace(/`/g, "") + "`";
+}
+
+// Builds WHERE clause for primary key or composite key
+function buildKeyWhere(tableInfo, bodyOrQuery) {
+    var values = [];
+
+    var clauses = tableInfo.keyFields.map(function(field) {
+        var value = bodyOrQuery["__key_" + field] || bodyOrQuery[field];
+
+        values.push(value);
+
+        return q(field) + " = ?";
+    });
+
+    return {
+        sql: clauses.join(" AND "),
+        values: values
     };
-
-    return tables[String(tableParam).toLowerCase()] || null;
 }
 
-// builds the editable city page article from Cities and CityFacts
-async function buildDefaultCityPage(cityId) {
-    var cityRows = await db.query(`
-        SELECT Cities.*, Countries.CountryName, Regions.RegionName
-        FROM Cities
-        JOIN Countries ON Cities.CountryID = Countries.CountryID
-        JOIN Regions ON Countries.RegionID = Regions.RegionID
-        WHERE Cities.CityID = ?
-        LIMIT 1
-    `, [cityId]);
-
-    if (cityRows[0].length === 0) {
-        return "";
+// Builds search condition for visible table columns
+function buildSearchWhere(columns, search) {
+    if (!search) {
+        return {
+            sql: "",
+            values: []
+        };
     }
 
-    var city = cityRows[0][0];
-
-    var factRows = await db.query(`
-        SELECT *
-        FROM CityFacts
-        WHERE CityID = ? AND IsActive = TRUE
-        ORDER BY FactType, FactSubtype, FactLabel
-    `, [cityId]);
-
-    var facts = factRows[0] || [];
-
-    var quickFacts = facts.filter(function(fact) {
-        return fact.FactType === "QuickFact";
+    var searchableColumns = columns.filter(function(col) {
+        return !col.endsWith("_Display");
     });
 
-    var funFacts = facts.filter(function(fact) {
-        return fact.FactType !== "QuickFact";
-    });
-
-    var html = "";
-
-    html += "<h1>" + city.CityName + "</h1>";
-    html += "<p><strong>" + city.CountryName + "</strong> | " + city.RegionName + "</p>";
-
-    if (city.CityImagePath) {
-        html += "<p><img class='city-image' src='" + city.CityImagePath + "' alt='" + city.CityName + "'></p>";
+    if (searchableColumns.length === 0) {
+        return {
+            sql: "",
+            values: []
+        };
     }
 
-    if (city.Description) {
-        html += "<p>" + city.Description + "</p>";
-    }
-
-    html += "<h2>Quick Facts</h2>";
-    html += "<ul>";
-    html += "<li><strong>Country:</strong> " + city.CountryName + "</li>";
-
-    if (city.Population) {
-        html += "<li><strong>Population:</strong> " + Number(city.Population).toLocaleString() + "</li>";
-    }
-
-    quickFacts.forEach(function(fact) {
-        if (fact.FactLabel !== "Country" && fact.FactLabel !== "Population") {
-            html += "<li><strong>" + fact.FactLabel + ":</strong> " + fact.FactValue + "</li>";
-        }
-    });
-
-    html += "</ul>";
-
-    html += "<h2>Location</h2>";
-    html += "<ul>";
-    html += "<li><strong>Latitude:</strong> " + city.Latitude + "</li>";
-    html += "<li><strong>Longitude:</strong> " + city.Longitude + "</li>";
-    html += "</ul>";
-
-    html += "<h2>Facts</h2>";
-    html += "<table>";
-    html += "<thead>";
-    html += "<tr>";
-    html += "<th>Fact</th>";
-    html += "<th>Image</th>";
-    html += "</tr>";
-    html += "</thead>";
-    html += "<tbody>";
-
-    funFacts.forEach(function(fact) {
-        html += "<tr>";
-        html += "<td><strong>" + fact.FactLabel + ":</strong> " + fact.FactValue + "</td>";
-
-        if (fact.FactImagePath) {
-            html += "<td><img class='fact-image' src='" + fact.FactImagePath + "' alt='" + fact.FactLabel + "'></td>";
-        } else {
-            html += "<td><span class='no-image'>No Image</span></td>";
-        }
-
-        html += "</tr>";
-    });
-
-    html += "</tbody>";
-    html += "</table>";
-
-    html += "<h2>Sources</h2>";
-    html += "<p>Sources can be added later.</p>";
-
-    return html;
+    return {
+        sql: "WHERE CONCAT_WS(' ', " + searchableColumns.map(q).join(", ") + ") LIKE ?",
+        values: ["%" + search + "%"]
+    };
 }
 
-// admin dashboard
+// Adds readable display names for foreign key columns
+function getTableSelectSql(tableName) {
+    if (tableName === "Cities") {
+        return `
+            SELECT Cities.*, Countries.CountryName AS CountryID_Display
+            FROM Cities
+            LEFT JOIN Countries ON Cities.CountryID = Countries.CountryID
+        `;
+    }
+
+    if (tableName === "Countries") {
+        return `
+            SELECT Countries.*, Regions.RegionName AS RegionID_Display
+            FROM Countries
+            LEFT JOIN Regions ON Countries.RegionID = Regions.RegionID
+        `;
+    }
+
+    if (tableName === "CityFacts") {
+        return `
+            SELECT CityFacts.*, Cities.CityName AS CityID_Display
+            FROM CityFacts
+            LEFT JOIN Cities ON CityFacts.CityID = Cities.CityID
+        `;
+    }
+
+    if (tableName === "CustomQuestions") {
+        return `
+            SELECT CustomQuestions.*, Cities.CityName AS CityID_Display
+            FROM CustomQuestions
+            LEFT JOIN Cities ON CustomQuestions.CityID = Cities.CityID
+        `;
+    }
+
+    return "SELECT * FROM " + q(tableName);
+}
+
+// Loads dropdown options for foreign key fields
+async function getForeignOptions() {
+    var regionRows = await db.query("SELECT RegionID AS value, RegionName AS label FROM Regions ORDER BY RegionName");
+    var countryRows = await db.query("SELECT CountryID AS value, CountryName AS label FROM Countries ORDER BY CountryName");
+    var cityRows = await db.query("SELECT CityID AS value, CityName AS label FROM Cities ORDER BY CityName");
+    var userRows = await db.query("SELECT UserID AS value, Username AS label FROM Users ORDER BY Username");
+    var templateRows = await db.query("SELECT TemplateID AS value, TemplateText AS label FROM QuestionTemplates ORDER BY TemplateID");
+    var customQuestionRows = await db.query("SELECT CustomQuestionID AS value, QuestionText AS label FROM CustomQuestions ORDER BY CustomQuestionID");
+    var factRows = await db.query("SELECT FactID AS value, FactLabel AS label FROM CityFacts ORDER BY FactID");
+    var quizAttemptRows = await db.query("SELECT QuizAttemptID AS value, CONCAT('Attempt ', QuizAttemptID, ' - User ', UserID) AS label FROM QuizAttempts ORDER BY QuizAttemptID DESC");
+    var flashcardSessionRows = await db.query("SELECT FlashcardSessionID AS value, CONCAT('Session ', FlashcardSessionID, ' - User ', UserID) AS label FROM FlashcardSessions ORDER BY FlashcardSessionID DESC");
+
+    return {
+        Regions: regionRows[0] || [],
+        Countries: countryRows[0] || [],
+        Cities: cityRows[0] || [],
+        Users: userRows[0] || [],
+        QuestionTemplates: templateRows[0] || [],
+        CustomQuestions: customQuestionRows[0] || [],
+        CityFacts: factRows[0] || [],
+        QuizAttempts: quizAttemptRows[0] || [],
+        FlashcardSessions: flashcardSessionRows[0] || []
+    };
+}
+
+// Admin dashboard route
 router.get("/admin", auth.requireAdmin, async function(req, res) {
     try {
-        var regionRows = await db.query(`
-            SELECT *
-            FROM Regions
-            ORDER BY RegionName
-        `);
-
-        var countryRows = await db.query(`
-            SELECT Countries.*, Regions.RegionName
-            FROM Countries
-            JOIN Regions ON Countries.RegionID = Regions.RegionID
-            ORDER BY Countries.CountryName
-        `);
-
-        var cityRows = await db.query(`
-            SELECT Cities.*, Countries.CountryName, Regions.RegionName
-            FROM Cities
-            JOIN Countries ON Cities.CountryID = Countries.CountryID
-            JOIN Regions ON Countries.RegionID = Regions.RegionID
-            ORDER BY Cities.CityName
-        `);
-
         res.render("admin", {
-            regions: regionRows[0] || [],
-            countries: countryRows[0] || [],
-            cities: cityRows[0] || [],
+            tables: getAdminTables(),
             message: req.query.message || ""
         });
     } catch (err) {
@@ -172,226 +343,7 @@ router.get("/admin", auth.requireAdmin, async function(req, res) {
     }
 });
 
-// add city
-router.post("/admin/cities/add", auth.requireAdmin, async function(req, res) {
-    try {
-        await db.query(`
-            INSERT INTO Cities
-            (CityName, CountryID, Population, Description, Latitude, Longitude, CityImagePath)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        `, [
-            req.body.name,
-            req.body.countryId,
-            req.body.population || null,
-            req.body.description || null,
-            req.body.lat || null,
-            req.body.lng || null,
-            req.body.image || null
-        ]);
-
-        res.redirect("/admin");
-    } catch (err) {
-        console.error("Add city error:", err);
-        res.status(500).send("Could not add city.");
-    }
-});
-
-// hide city
-router.post("/admin/cities/:id/hide", auth.requireAdmin, async function(req, res) {
-    try {
-        await db.query("UPDATE Cities SET IsActive = FALSE WHERE CityID = ?", [req.params.id]);
-        res.redirect("/cities/" + req.params.id);
-    } catch (err) {
-        console.error("Hide city error:", err);
-        res.status(500).send("Could not hide city.");
-    }
-});
-
-// unhide city
-router.post("/admin/cities/:id/unhide", auth.requireAdmin, async function(req, res) {
-    try {
-        await db.query("UPDATE Cities SET IsActive = TRUE WHERE CityID = ?", [req.params.id]);
-        res.redirect("/cities/" + req.params.id);
-    } catch (err) {
-        console.error("Unhide city error:", err);
-        res.status(500).send("Could not unhide city.");
-    }
-});
-
-// load wiki editor
-router.get("/admin/cities/:id/content", auth.requireAdmin, async function(req, res) {
-    try {
-        var cityId = req.params.id;
-
-        var cityRows = await db.query(`
-            SELECT CityID, CityName
-            FROM Cities
-            WHERE CityID = ?
-            LIMIT 1
-        `, [cityId]);
-
-        if (cityRows[0].length === 0) {
-            return res.status(404).send("City not found.");
-        }
-
-        var pageRows = await db.query(`
-            SELECT PageContent
-            FROM CityPageContent
-            WHERE CityID = ?
-            LIMIT 1
-        `, [cityId]);
-
-        var pageContent = "";
-
-        if (pageRows[0].length > 0 && pageRows[0][0].PageContent) {
-            pageContent = pageRows[0][0].PageContent;
-        } else {
-            pageContent = await buildDefaultCityPage(cityId);
-        }
-
-        res.render("cityContentEdit", {
-            city: cityRows[0][0],
-            pageContent: pageContent
-        });
-    } catch (err) {
-        console.error("Content editor error:", err);
-        res.status(500).send("Could not load city page editor.");
-    }
-});
-
-// save wiki editor
-router.post("/admin/cities/:id/content", auth.requireAdmin, async function(req, res) {
-    try {
-        var cityId = req.params.id;
-        var content = req.body.pageContent || "";
-        var editSummary = req.body.editSummary || null;
-        var userId = getSessionUserId(req);
-
-        var existing = await db.query(`
-            SELECT PageContent
-            FROM CityPageContent
-            WHERE CityID = ?
-            LIMIT 1
-        `, [cityId]);
-
-        if (existing[0].length > 0) {
-            await db.query(`
-                INSERT INTO CityPageRevisions
-                (CityID, EditedByUserID, PageContent, EditSummary)
-                VALUES (?, ?, ?, ?)
-            `, [
-                cityId,
-                userId,
-                existing[0][0].PageContent || "",
-                editSummary
-            ]);
-
-            await db.query(`
-                UPDATE CityPageContent
-                SET PageContent = ?, LastUpdated = CURRENT_TIMESTAMP
-                WHERE CityID = ?
-            `, [content, cityId]);
-        } else {
-            await db.query(`
-                INSERT INTO CityPageContent
-                (CityID, PageContent)
-                VALUES (?, ?)
-            `, [cityId, content]);
-        }
-
-        res.redirect("/cities/" + cityId);
-    } catch (err) {
-        console.error("Save city page content error:", err);
-        res.status(500).send("Could not save city page content.");
-    }
-});
-
-// reset editable content from database
-router.post("/admin/cities/:id/content/reset", auth.requireAdmin, async function(req, res) {
-    try {
-        var cityId = req.params.id;
-        var rebuiltContent = await buildDefaultCityPage(cityId);
-        var userId = getSessionUserId(req);
-
-        var existing = await db.query(`
-            SELECT PageContent
-            FROM CityPageContent
-            WHERE CityID = ?
-            LIMIT 1
-        `, [cityId]);
-
-        if (existing[0].length > 0) {
-            await db.query(`
-                INSERT INTO CityPageRevisions
-                (CityID, EditedByUserID, PageContent, EditSummary)
-                VALUES (?, ?, ?, ?)
-            `, [
-                cityId,
-                userId,
-                existing[0][0].PageContent || "",
-                "Reset page from database facts"
-            ]);
-
-            await db.query(`
-                UPDATE CityPageContent
-                SET PageContent = ?, LastUpdated = CURRENT_TIMESTAMP
-                WHERE CityID = ?
-            `, [rebuiltContent, cityId]);
-        } else {
-            await db.query(`
-                INSERT INTO CityPageContent
-                (CityID, PageContent)
-                VALUES (?, ?)
-            `, [cityId, rebuiltContent]);
-        }
-
-        res.redirect("/admin/cities/" + cityId + "/content");
-    } catch (err) {
-        console.error("Reset city page content error:", err);
-        res.status(500).send("Could not reset city page content.");
-    }
-});
-
-// history
-router.get("/admin/cities/:id/history", auth.requireAdmin, async function(req, res) {
-    try {
-        var cityId = req.params.id;
-
-        var cityRows = await db.query(`
-            SELECT CityID, CityName
-            FROM Cities
-            WHERE CityID = ?
-            LIMIT 1
-        `, [cityId]);
-
-        if (cityRows[0].length === 0) {
-            return res.status(404).send("City not found.");
-        }
-
-        var revisionRows = await db.query(`
-            SELECT
-                CityPageRevisions.RevisionID,
-                CityPageRevisions.PageContent,
-                CityPageRevisions.EditSummary,
-                CityPageRevisions.CreatedAt,
-                Users.Username
-            FROM CityPageRevisions
-            LEFT JOIN Users ON CityPageRevisions.EditedByUserID = Users.UserID
-            WHERE CityPageRevisions.CityID = ?
-            ORDER BY CityPageRevisions.CreatedAt DESC
-        `, [cityId]);
-
-        res.render("cityHistory", {
-            city: cityRows[0][0],
-            revisions: revisionRows[0] || []
-        });
-    } catch (err) {
-        console.error("History error:", err);
-        res.status(500).send("Could not load edit history.");
-    }
-});
-
-// database view
+// Shows selected database table
 router.get("/admin/database/:table", auth.requireAdmin, async function(req, res) {
     try {
         var tableInfo = getTableInfo(req.params.table);
@@ -400,58 +352,51 @@ router.get("/admin/database/:table", auth.requireAdmin, async function(req, res)
             return res.status(400).send("Invalid table.");
         }
 
-        var columnRows = await db.query("SHOW COLUMNS FROM " + tableInfo.table);
+        var search = req.query.search || "";
+        var page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+        var limit = Math.max(parseInt(req.query.limit, 10) || 25, 5);
+        var offset = (page - 1) * limit;
+
+        var columnRows = await db.query("SHOW COLUMNS FROM " + q(tableInfo.table));
+
         var columns = columnRows[0].map(function(col) {
             return col.Field;
         });
 
-        var citiesRows = await db.query(`
-            SELECT CityID, CityName
-            FROM Cities
-            ORDER BY CityName
-        `);
+        var searchWhere = buildSearchWhere(columns, search);
 
-        var rows;
+        var countRows = await db.query(
+            "SELECT COUNT(*) AS total FROM " + q(tableInfo.table) + " " + searchWhere.sql,
+            searchWhere.values
+        );
 
-        if (tableInfo.table === "Cities") {
-            rows = await db.query(`
-                SELECT Cities.*, Countries.CountryName AS CountryID_Display
-                FROM Cities
-                LEFT JOIN Countries ON Cities.CountryID = Countries.CountryID
-                LIMIT 500
-            `);
-        } else if (tableInfo.table === "Countries") {
-            rows = await db.query(`
-                SELECT Countries.*, Regions.RegionName AS RegionID_Display
-                FROM Countries
-                LEFT JOIN Regions ON Countries.RegionID = Regions.RegionID
-                LIMIT 500
-            `);
-        } else if (tableInfo.table === "CityFacts") {
-            rows = await db.query(`
-                SELECT CityFacts.*, Cities.CityName AS CityID_Display
-                FROM CityFacts
-                LEFT JOIN Cities ON CityFacts.CityID = Cities.CityID
-                LIMIT 500
-            `);
-        } else if (tableInfo.table === "CustomQuestions") {
-            rows = await db.query(`
-                SELECT CustomQuestions.*, Cities.CityName AS CityID_Display
-                FROM CustomQuestions
-                LEFT JOIN Cities ON CustomQuestions.CityID = Cities.CityID
-                LIMIT 500
-            `);
-        } else {
-            rows = await db.query("SELECT * FROM " + tableInfo.table + " LIMIT 500");
-        }
+        var totalRows = countRows[0][0].total || 0;
+        var totalPages = Math.max(Math.ceil(totalRows / limit), 1);
+        var baseSql = getTableSelectSql(tableInfo.table);
+
+        var rows = await db.query(
+            baseSql + " " + searchWhere.sql + " LIMIT ? OFFSET ?",
+            searchWhere.values.concat([limit, offset])
+        );
 
         res.render("adminTable", {
+            tables: getAdminTables(),
+            tableInfo: tableInfo,
             tableName: tableInfo.table,
-            tableSlug: req.params.table,
-            primaryKey: tableInfo.primaryKey,
+            tableSlug: tableInfo.slug,
+            keyFields: tableInfo.keyFields,
+            hasIsActive: tableInfo.hasIsActive,
+            canAdd: tableInfo.canAdd,
+            editableFields: tableInfo.editableFields,
+            foreignKeys: tableInfo.foreignKeys,
+            foreignOptions: await getForeignOptions(),
             rows: rows[0] || [],
             columns: columns,
-            cities: citiesRows[0] || []
+            search: search,
+            page: page,
+            limit: limit,
+            totalRows: totalRows,
+            totalPages: totalPages
         });
     } catch (err) {
         console.error("Database table error:", err);
@@ -459,8 +404,8 @@ router.get("/admin/database/:table", auth.requireAdmin, async function(req, res)
     }
 });
 
-// delete database row
-router.post("/admin/database/:table/delete/:id", auth.requireAdmin, async function(req, res) {
+// Shows one row in read-only view
+router.get("/admin/database/:table/view", auth.requireAdmin, async function(req, res) {
     try {
         var tableInfo = getTableInfo(req.params.table);
 
@@ -468,20 +413,49 @@ router.post("/admin/database/:table/delete/:id", auth.requireAdmin, async functi
             return res.status(400).send("Invalid table.");
         }
 
-        await db.query(
-            "DELETE FROM " + tableInfo.table + " WHERE " + tableInfo.primaryKey + " = ?",
-            [req.params.id]
+        var keyData = JSON.parse(req.query.key || "{}");
+        var keyWhere = buildKeyWhere(tableInfo, keyData);
+
+        var rowResult = await db.query(
+            "SELECT * FROM " + q(tableInfo.table) + " WHERE " + keyWhere.sql + " LIMIT 1",
+            keyWhere.values
         );
 
-        res.redirect("/admin/database/" + req.params.table);
+        if (rowResult[0].length === 0) {
+            return res.status(404).send("Row not found.");
+        }
+
+        var row = rowResult[0][0];
+        var html = "";
+
+        html += "<!DOCTYPE html><html><head>";
+        html += "<title>View Row</title>";
+        html += "<link rel='stylesheet' href='/css/style.css'>";
+        html += "</head><body>";
+        html += "<main class='home-container'>";
+        html += "<p><a href='/admin/database/" + tableInfo.slug + "'>Back to Table</a></p>";
+        html += "<h1>View Row: " + tableInfo.table + "</h1>";
+        html += "<table class='admin-table'>";
+
+        Object.keys(row).forEach(function(col) {
+            html += "<tr>";
+            html += "<th>" + col + "</th>";
+            html += "<td>" + (row[col] === null ? "" : String(row[col])) + "</td>";
+            html += "</tr>";
+        });
+
+        html += "</table>";
+        html += "</main></body></html>";
+
+        res.send(html);
     } catch (err) {
-        console.error("Delete row error:", err);
-        res.status(500).send("Could not delete row.");
+        console.error("View row error:", err);
+        res.status(500).send("Could not view row.");
     }
 });
 
-// update database row
-router.post("/admin/database/:table/update/:id", auth.requireAdmin, async function(req, res) {
+// Updates only allowed editable fields
+router.post("/admin/database/:table/update", auth.requireAdmin, async function(req, res) {
     try {
         var tableInfo = getTableInfo(req.params.table);
 
@@ -490,58 +464,119 @@ router.post("/admin/database/:table/update/:id", auth.requireAdmin, async functi
         }
 
         var fields = Object.keys(req.body).filter(function(field) {
-            return field !== tableInfo.primaryKey && !field.endsWith("_Display");
+            return tableInfo.editableFields.includes(field);
         });
+
+        if (fields.length === 0) {
+            return res.redirect("/admin/database/" + tableInfo.slug);
+        }
 
         var values = fields.map(function(field) {
             return req.body[field] === "" ? null : req.body[field];
         });
 
-        if (fields.length === 0) {
-            return res.redirect("/admin/database/" + req.params.table);
-        }
-
         var setClause = fields.map(function(field) {
-            return field + " = ?";
+            return q(field) + " = ?";
         }).join(", ");
 
+        var keyWhere = buildKeyWhere(tableInfo, req.body);
+
         await db.query(
-            "UPDATE " + tableInfo.table + " SET " + setClause + " WHERE " + tableInfo.primaryKey + " = ?",
-            values.concat([req.params.id])
+            "UPDATE " + q(tableInfo.table) + " SET " + setClause + " WHERE " + keyWhere.sql,
+            values.concat(keyWhere.values)
         );
 
-        res.redirect("/admin/database/" + req.params.table);
+        res.redirect("/admin/database/" + tableInfo.slug);
     } catch (err) {
         console.error("Update row error:", err);
         res.status(500).send("Could not update row.");
     }
 });
 
-// add custom question
-router.post("/admin/customquestions/add", auth.requireAdmin, async function(req, res) {
+// Adds rows only for tables where canAdd is true
+router.post("/admin/database/:table/add", auth.requireAdmin, async function(req, res) {
     try {
-        await db.query(`
-            INSERT INTO CustomQuestions
-            (CityID, QuestionType, QuestionText, CorrectAnswer, WrongAnswer1, WrongAnswer2, WrongAnswer3, Explanation, Difficulty, IsActive, ImagePath)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, TRUE, ?)
-        `, [
-            req.body.cityId,
-            req.body.questionType,
-            req.body.questionText,
-            req.body.correctAnswer,
-            req.body.wrongAnswer1 || null,
-            req.body.wrongAnswer2 || null,
-            req.body.wrongAnswer3 || null,
-            req.body.explanation || null,
-            req.body.difficulty || null,
-            req.body.imagePath || null
-        ]);
+        var tableInfo = getTableInfo(req.params.table);
 
-        res.redirect("/admin/database/customquestions");
+        if (!tableInfo || !tableInfo.canAdd) {
+            return res.status(400).send("This table does not allow manual row creation.");
+        }
+
+        var insertFields = Object.keys(req.body).filter(function(field) {
+            return tableInfo.editableFields.includes(field);
+        });
+
+        var insertValues = insertFields.map(function(field) {
+            return req.body[field] === "" ? null : req.body[field];
+        });
+
+        if (insertFields.length === 0) {
+            return res.redirect("/admin/database/" + tableInfo.slug);
+        }
+
+        var placeholders = insertFields.map(function() {
+            return "?";
+        }).join(", ");
+
+        await db.query(
+            "INSERT INTO " + q(tableInfo.table) +
+            " (" + insertFields.map(q).join(", ") + ")" +
+            " VALUES (" + placeholders + ")",
+            insertValues
+        );
+
+        res.redirect("/admin/database/" + tableInfo.slug);
     } catch (err) {
-        console.error("Add custom question error:", err);
-        res.status(500).send("Could not add custom question.");
+        console.error("Add row error:", err);
+        res.status(500).send("Could not add row.");
     }
 });
 
+// Hides rows using IsActive
+router.post("/admin/database/:table/hide", auth.requireAdmin, async function(req, res) {
+    try {
+        var tableInfo = getTableInfo(req.params.table);
+
+        if (!tableInfo || !tableInfo.hasIsActive) {
+            return res.status(400).send("This table cannot be hidden.");
+        }
+
+        var keyWhere = buildKeyWhere(tableInfo, req.body);
+
+        await db.query(
+            "UPDATE " + q(tableInfo.table) + " SET IsActive = FALSE WHERE " + keyWhere.sql,
+            keyWhere.values
+        );
+
+        res.redirect("/admin/database/" + tableInfo.slug);
+    } catch (err) {
+        console.error("Hide row error:", err);
+        res.status(500).send("Could not hide row.");
+    }
+});
+
+// Unhides rows using IsActive
+router.post("/admin/database/:table/unhide", auth.requireAdmin, async function(req, res) {
+    try {
+        var tableInfo = getTableInfo(req.params.table);
+
+        if (!tableInfo || !tableInfo.hasIsActive) {
+            return res.status(400).send("This table cannot be unhidden.");
+        }
+
+        var keyWhere = buildKeyWhere(tableInfo, req.body);
+
+        await db.query(
+            "UPDATE " + q(tableInfo.table) + " SET IsActive = TRUE WHERE " + keyWhere.sql,
+            keyWhere.values
+        );
+
+        res.redirect("/admin/database/" + tableInfo.slug);
+    } catch (err) {
+        console.error("Unhide row error:", err);
+        res.status(500).send("Could not unhide row.");
+    }
+});
+
+// Exports admin router
 module.exports = router;

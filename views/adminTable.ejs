@@ -1,3 +1,6 @@
+<!-- adminTable.ejs -->
+<!-- Renders a protected generic admin table editor using route-provided table rules -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,85 +9,27 @@
   <link rel="stylesheet" href="/css/style.css">
 
   <style>
-    main {
-      padding: 20px;
-    }
-
-    .table-wrapper {
-      width: 100%;
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-    }
-
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      vertical-align: top;
-      white-space: normal;
-      word-wrap: break-word;
-      overflow-wrap: anywhere;
-    }
-
-    th {
-      background: #f4f4f4;
-    }
-
-    input,
-    textarea {
-      width: 100%;
-      box-sizing: border-box;
-      border: 1px solid #ccc;
-      padding: 6px;
-      resize: vertical;
-      white-space: normal;
-      overflow-wrap: anywhere;
-    }
-
-    textarea {
-      min-height: 70px;
-    }
-
-    input:disabled,
-    textarea:disabled {
-      background: #f3f4f6;
-      color: #333;
-      font-weight: bold;
-      border: none;
-    }
-
-    .id-display {
-      font-size: 12px;
-      color: #555;
-      margin-top: 4px;
-    }
-
-    .actions {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    button {
-      padding: 6px 10px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .save-btn {
-      background: #28a745;
-      color: white;
-    }
-
-    .delete-btn {
-      background: #dc3545;
-      color: white;
-    }
+    main { padding: 20px; }
+    .admin-toolbar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+    .admin-toolbar input, .admin-toolbar select { padding: 8px; }
+    .table-wrapper { width: 100%; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    th, td { border: 1px solid #ddd; padding: 8px; vertical-align: top; white-space: normal; word-wrap: break-word; overflow-wrap: anywhere; }
+    th { background: #f4f4f4; }
+    input, textarea, select { width: 100%; box-sizing: border-box; border: 1px solid #ccc; padding: 6px; resize: vertical; }
+    textarea { min-height: 70px; }
+    input:disabled, textarea:disabled, select:disabled { background: #f3f4f6; color: #333; font-weight: bold; border: none; }
+    .id-display { font-size: 12px; color: #555; margin-top: 4px; }
+    .readonly-note { font-size: 12px; color: #777; margin-top: 4px; }
+    .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    button, .view-btn, .page-btn { padding: 6px 10px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; font-size: 14px; }
+    .save-btn { background: #28a745; color: white; }
+    .hide-btn { background: #dc3545; color: white; }
+    .unhide-btn { background: #007BFF; color: white; }
+    .view-btn, .page-btn { background: #1f2937; color: white; }
+    .add-row { margin-top: 28px; background: white; border: 1px solid #ddd; padding: 16px; border-radius: 10px; }
+    .pagination { margin-top: 18px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .hidden-row { background: #fff1f2; }
   </style>
 </head>
 
@@ -98,79 +43,265 @@
 
 <h1><%= tableName %></h1>
 
+<p>
+  Editable fields are controlled by admin rules. Primary keys, password hashes, timestamps, score/stat records, and relationship-table data are protected.
+</p>
+
+<form method="GET" action="/admin/database/<%= tableSlug %>" class="admin-toolbar">
+  <input type="text" name="search" value="<%= search %>" placeholder="Search this table">
+
+  <select name="limit">
+    <% [10, 25, 50, 100].forEach(function(size) { %>
+      <option value="<%= size %>" <%= Number(limit) === size ? "selected" : "" %>><%= size %> rows</option>
+    <% }) %>
+  </select>
+
+  <button type="submit">Apply</button>
+  <a class="page-btn" href="/admin/database/<%= tableSlug %>">Reset Filters</a>
+</form>
+
+<p>
+  Showing page <%= page %> of <%= totalPages %>.
+  Total rows found: <%= totalRows %>.
+</p>
+
 <div class="table-wrapper">
 <table>
   <thead>
     <tr>
-      <% if (rows.length > 0) { %>
-        <% Object.keys(rows[0]).forEach(function(col) { %>
-          <% if (!col.endsWith("_Display")) { %>
-            <th><%= col %></th>
-          <% } %>
-        <% }) %>
-        <th>Actions</th>
-      <% } %>
+      <% columns.forEach(function(col) { %>
+        <th><%= col %></th>
+      <% }) %>
+      <th>Actions</th>
     </tr>
   </thead>
 
   <tbody>
     <% rows.forEach(function(row) { %>
-      <tr>
-        <form method="POST" action="/admin/database/<%= tableSlug %>/update/<%= row[primaryKey] %>">
+      <%
+        var keyObject = {};
+        keyFields.forEach(function(key) {
+          keyObject[key] = row[key];
+        });
 
-          <% Object.keys(row).forEach(function(col) { %>
-            <% if (!col.endsWith("_Display")) { %>
-              <td>
-                <% 
-                  var isIdColumn = col.endsWith("ID");
-                  var displayCol = col + "_Display";
-                  var displayValue = row[displayCol];
-                  var value = row[col] !== null ? row[col] : "";
-                  var isLongText = String(value).length > 50;
-                %>
+        var rowKey = encodeURIComponent(JSON.stringify(keyObject));
+        var isHidden = hasIsActive && (row.IsActive === 0 || row.IsActive === false);
+        var rowCanSave = editableFields.length > 0;
+      %>
 
-                <% if (isIdColumn) { %>
-                  <input 
-                    type="text"
-                    name="<%= col %>"
-                    value="<%= value %>"
-                    disabled
-                  >
+      <tr class="<%= isHidden ? 'hidden-row' : '' %>">
+        <form method="POST" action="/admin/database/<%= tableSlug %>/update">
 
-                  <% if (displayValue) { %>
-                    <div class="id-display">
-                      <strong>Matches:</strong> <%= displayValue %>
-                    </div>
-                  <% } %>
+          <% keyFields.forEach(function(key) { %>
+            <input type="hidden" name="__key_<%= key %>" value="<%= row[key] %>">
+          <% }) %>
 
-                <% } else if (isLongText) { %>
-                  <textarea name="<%= col %>"><%= value %></textarea>
+          <% columns.forEach(function(col) { %>
+            <td>
+              <%
+                var value = row[col] !== null ? row[col] : "";
+                var displayCol = col + "_Display";
+                var displayValue = row[displayCol];
+                var isKeyColumn = keyFields.includes(col);
+                var isEditable = editableFields.includes(col);
+                var isLongText = String(value).length > 60;
+                var optionSource = foreignKeys[col];
+                var options = optionSource ? (foreignOptions[optionSource] || []) : [];
+              %>
 
+              <% if (optionSource && isEditable) { %>
+                <select name="<%= col %>">
+                  <option value="">None</option>
+                  <% options.forEach(function(option) { %>
+                    <option value="<%= option.value %>" <%= String(option.value) === String(value) ? "selected" : "" %>>
+                      <%= option.value %> - <%= option.label %>
+                    </option>
+                  <% }) %>
+                </select>
+
+              <% } else if (col === "UserType" && isEditable) { %>
+                <select name="UserType">
+                  <option value="user" <%= value === "user" ? "selected" : "" %>>user</option>
+                  <option value="admin" <%= value === "admin" ? "selected" : "" %>>admin</option>
+                </select>
+
+              <% } else if ((col === "IsActive" || col === "IsDeleted" || col === "Timed" || col === "IsCorrect") && isEditable) { %>
+                <select name="<%= col %>">
+                  <option value="0" <%= String(value) === "0" || value === false ? "selected" : "" %>>0</option>
+                  <option value="1" <%= String(value) === "1" || value === true ? "selected" : "" %>>1</option>
+                </select>
+
+              <% } else if (col === "QuestionType" && isEditable) { %>
+                <select name="QuestionType">
+                  <% ["MC", "TF", "FB", "MC_IMAGE"].forEach(function(type) { %>
+                    <option value="<%= type %>" <%= value === type ? "selected" : "" %>><%= type %></option>
+                  <% }) %>
+                </select>
+
+              <% } else if (col === "Difficulty" && isEditable) { %>
+                <select name="Difficulty">
+                  <% ["easy", "medium", "hard"].forEach(function(type) { %>
+                    <option value="<%= type %>" <%= value === type ? "selected" : "" %>><%= type %></option>
+                  <% }) %>
+                </select>
+
+              <% } else if (col === "Status" && isEditable) { %>
+                <select name="Status">
+                  <% ["in_progress", "completed", "abandoned"].forEach(function(type) { %>
+                    <option value="<%= type %>" <%= value === type ? "selected" : "" %>><%= type %></option>
+                  <% }) %>
+                </select>
+
+              <% } else if (isEditable && isLongText) { %>
+                <textarea name="<%= col %>"><%= value %></textarea>
+
+              <% } else if (isEditable) { %>
+                <input type="text" name="<%= col %>" value="<%= value %>">
+
+              <% } else { %>
+                <% if (isLongText) { %>
+                  <textarea disabled><%= value %></textarea>
                 <% } else { %>
-                  <input 
-                    type="text"
-                    name="<%= col %>"
-                    value="<%= value %>"
-                  >
+                  <input type="text" value="<%= value %>" disabled>
                 <% } %>
-              </td>
-            <% } %>
+
+                <% if (isKeyColumn) { %>
+                  <div class="readonly-note">Primary key protected</div>
+                <% } else { %>
+                  <div class="readonly-note">Website/system field protected</div>
+                <% } %>
+              <% } %>
+
+              <% if (displayValue) { %>
+                <div class="id-display">
+                  <strong>Matches:</strong> <%= displayValue %>
+                </div>
+              <% } %>
+            </td>
           <% }) %>
 
           <td class="actions">
-            <button class="save-btn" type="submit">Save</button>
+            <a class="view-btn" href="/admin/database/<%= tableSlug %>/view?key=<%= rowKey %>">View</a>
+
+            <% if (rowCanSave) { %>
+              <button class="save-btn" type="submit">Save</button>
+            <% } %>
         </form>
 
-        <form method="POST" action="/admin/database/<%= tableSlug %>/delete/<%= row[primaryKey] %>">
-            <button class="delete-btn" type="submit">Delete</button>
-        </form>
+        <% if (hasIsActive) { %>
+          <% if (isHidden) { %>
+            <form method="POST" action="/admin/database/<%= tableSlug %>/unhide">
+              <% keyFields.forEach(function(key) { %>
+                <input type="hidden" name="__key_<%= key %>" value="<%= row[key] %>">
+              <% }) %>
+              <button class="unhide-btn" type="submit">Unhide</button>
+            </form>
+          <% } else { %>
+            <form method="POST" action="/admin/database/<%= tableSlug %>/hide">
+              <% keyFields.forEach(function(key) { %>
+                <input type="hidden" name="__key_<%= key %>" value="<%= row[key] %>">
+              <% }) %>
+              <button class="hide-btn" type="submit">Hide</button>
+            </form>
+          <% } %>
+        <% } %>
           </td>
-
       </tr>
     <% }) %>
   </tbody>
 </table>
 </div>
+
+<div class="pagination">
+  <% if (page > 1) { %>
+    <a class="page-btn" href="/admin/database/<%= tableSlug %>?search=<%= encodeURIComponent(search) %>&limit=<%= limit %>&page=<%= page - 1 %>">Previous</a>
+  <% } %>
+
+  <% if (page < totalPages) { %>
+    <a class="page-btn" href="/admin/database/<%= tableSlug %>?search=<%= encodeURIComponent(search) %>&limit=<%= limit %>&page=<%= page + 1 %>">Next</a>
+  <% } %>
+</div>
+
+<% if (canAdd) { %>
+  <section class="add-row">
+    <h2>Add New Row</h2>
+
+    <form method="POST" action="/admin/database/<%= tableSlug %>/add">
+      <table>
+        <thead>
+          <tr>
+            <% columns.forEach(function(col) { %>
+              <% if (editableFields.includes(col)) { %>
+                <th><%= col %></th>
+              <% } %>
+            <% }) %>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <% columns.forEach(function(col) { %>
+              <% if (editableFields.includes(col)) { %>
+                <td>
+                  <%
+                    var optionSource = foreignKeys[col];
+                    var options = optionSource ? (foreignOptions[optionSource] || []) : [];
+                  %>
+
+                  <% if (optionSource) { %>
+                    <select name="<%= col %>">
+                      <option value="">None</option>
+                      <% options.forEach(function(option) { %>
+                        <option value="<%= option.value %>">
+                          <%= option.value %> - <%= option.label %>
+                        </option>
+                      <% }) %>
+                    </select>
+
+                  <% } else if (col === "QuestionType") { %>
+                    <select name="QuestionType">
+                      <option value="MC">MC</option>
+                      <option value="TF">TF</option>
+                      <option value="FB">FB</option>
+                      <option value="MC_IMAGE">MC_IMAGE</option>
+                    </select>
+
+                  <% } else if (col === "Difficulty") { %>
+                    <select name="Difficulty">
+                      <option value="">None</option>
+                      <option value="easy">easy</option>
+                      <option value="medium">medium</option>
+                      <option value="hard">hard</option>
+                    </select>
+
+                  <% } else if (col === "IsActive") { %>
+                    <select name="IsActive">
+                      <option value="1">1</option>
+                      <option value="0">0</option>
+                    </select>
+
+                  <% } else { %>
+                    <input type="text" name="<%= col %>">
+                  <% } %>
+                </td>
+              <% } %>
+            <% }) %>
+
+            <td>
+              <button class="save-btn" type="submit">Add Row</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+  </section>
+<% } else { %>
+  <section class="add-row">
+    <h2>Add New Row</h2>
+    <p>This table is generated by the website or stores system/relationship data, so manual row creation is disabled.</p>
+  </section>
+<% } %>
 
 </main>
 

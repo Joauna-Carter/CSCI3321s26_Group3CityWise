@@ -6,7 +6,7 @@ var db = require("../db/connection");
 var quizHelpers = require("../utils/quizHelpers");
 var { renderPage, escapeHtml } = require("../utils/pageHelpers");
 
-// study and quiz setup page
+// study setup page
 router.get("/study", async function(req, res) {
     try {
         var selectedCityId = req.query.cityId || "";
@@ -67,7 +67,7 @@ router.post("/study/start", async function(req, res) {
     }
 });
 
-// start quiz and generate questions
+// start quiz
 router.get("/quiz/start", async function(req, res) {
     try {
         var cityId = req.query.cityId || "";
@@ -106,7 +106,7 @@ router.get("/quiz/start", async function(req, res) {
 
         var timing = quizHelpers.getQuizTiming(difficulty);
 
-        if (questions.length === 0) {
+        if (!questions || questions.length === 0) {
             return res.send(renderPage(req, "Quiz", "<p>Not enough facts/templates are available to generate quiz questions yet.</p><p><a href='/study'>Go back</a></p>"));
         }
 
@@ -133,7 +133,7 @@ router.get("/quiz/start", async function(req, res) {
     }
 });
 
-// show current quiz question
+// show question
 router.get("/quiz", function(req, res) {
     var quiz = req.session.currentQuiz;
 
@@ -169,7 +169,6 @@ router.get("/quiz", function(req, res) {
 
     content += "<section class='cities-section'>";
     content += "<form id='quiz-form' method='POST' action='/quiz/answer'>";
-
     content += "<div class='city-card'>";
     content += "<p><strong>" + escapeHtml(question.questionText) + "</strong></p>";
 
@@ -184,6 +183,7 @@ router.get("/quiz", function(req, res) {
     if (question.questionType === "MC" || question.questionType === "TF") {
         question.choices.forEach(function(choice, choiceIndex) {
             var choiceId = "choice_" + choiceIndex;
+
             content += "<p>";
             content += "<label for='" + choiceId + "'>";
             content += "<input type='radio' id='" + choiceId + "' name='answer' value='" + escapeHtml(choice.value) + "' required> ";
@@ -215,7 +215,6 @@ router.get("/quiz", function(req, res) {
     }
 
     content += "</div>";
-
     content += "<p><button type='submit'>Submit Answer</button></p>";
     content += "</form>";
     content += "</section>";
@@ -264,7 +263,7 @@ router.get("/quiz", function(req, res) {
     res.send(renderPage(req, "Quiz", content));
 });
 
-// submit one quiz answer
+// submit answer
 router.post("/quiz/answer", async function(req, res) {
     try {
         var quiz = req.session.currentQuiz;
@@ -286,7 +285,6 @@ router.post("/quiz/answer", async function(req, res) {
         var maxPointsPerQuestion = timing.maxPointsPerQuestion;
         var timeLeft = Number(req.body.timeLeft) || 0;
         var timeLeftRatio = quiz.timed ? timeLeft / secondsPerQuestion : 1;
-
         var isCorrect = false;
 
         if (question.questionType === "FB") {
@@ -338,7 +336,7 @@ router.post("/quiz/answer", async function(req, res) {
     }
 });
 
-// quiz results
+// results
 router.get("/quiz/results", async function(req, res) {
     try {
         var quiz = req.session.currentQuiz;
@@ -364,7 +362,7 @@ router.get("/quiz/results", async function(req, res) {
         content += "<p><strong>Total Points:</strong> " + quiz.totalPoints + "</p>";
 
         if (quiz.timed) {
-            content += "<p>Timed mode used Kahoot-style scoring: faster correct answers earned more points.</p>";
+            content += "<p>Timed mode used speed-based scoring: faster correct answers earned more points.</p>";
         }
 
         if (!req.session.user) {
