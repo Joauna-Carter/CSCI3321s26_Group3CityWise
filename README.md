@@ -18,7 +18,7 @@ Backend: Node.js and Express. Frontend: EJS templates. Database: MySQL. Authenti
 4. Create a .gitignore file if it does not exist and include: node_modules/, .env, .env.local, *.log, coverage/.
 5. Set up MySQL and create the database by running CREATE DATABASE citywise; in MySQL.
 6. Import the database backup using mysql -u root -p citywise < citywise_backup.sql or use MySQL Workbench through Server → Data Import and select the file.
-7. Run the application using node app.js and open [http://localhost:3000](http://localhost:3000) in a browser.
+7. Run the application using node app.js and open [http://localhost:3001](http://localhost:3001) in a browser.
 
 ## Running Tests
 
@@ -51,5 +51,6 @@ This project is actively being updated and documentation may change. Check the l
 ## Authors
 
 CityWise Development Team (Joauna Carter, Aidan, Joss)
+CityWise Maintainence Team (Jose Felix Combs, Emma Hennessee, Mitchel Onufrow)
 
 

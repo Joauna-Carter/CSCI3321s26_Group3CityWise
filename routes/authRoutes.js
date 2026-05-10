@@ -11,7 +11,10 @@ router.get("/", function(req, res) {
 
 // register page
 router.get("/register", function(req, res) {
-    res.render("register");
+    res.render("register", {
+        errorMessage: "",
+        username: ""
+    });
 });
 
 // register submit
@@ -21,7 +24,10 @@ router.post("/register", async function(req, res) {
         var password = (req.body.password || "").trim();
 
         if (!username || !password) {
-            return res.status(400).send("Username and password are required.");
+            return res.render("register", {
+                errorMessage: "Username and password are required.",
+                username: username
+            });
         }
 
         var existingUserRows = await db.query(`
@@ -31,7 +37,10 @@ router.post("/register", async function(req, res) {
         `, [username]);
 
         if (existingUserRows[0].length > 0) {
-            return res.status(400).send("Username already exists.");
+            return res.render("register", {
+                errorMessage: "Username already exists.",
+                username: username
+            });
         }
 
         var passwordHash = await bcrypt.hash(password, 10);
@@ -70,13 +79,19 @@ router.post("/register", async function(req, res) {
         res.redirect("/");
     } catch (err) {
         console.error("Register error:", err);
-        res.status(500).send("Could not create account.");
+        res.status(500).render("register", {
+            errorMessage: "Could not create account.",
+            username: (req.body.username || "").trim()
+        });
     }
 });
 
 // login page
 router.get("/login", function(req, res) {
-    res.render("login");
+    res.render("login", {
+        errorMessage: "",
+        username: ""
+    });
 });
 
 // login submit
@@ -86,7 +101,10 @@ router.post("/login", async function(req, res) {
         var password = (req.body.password || "").trim();
 
         if (!username || !password) {
-            return res.status(400).send("Please enter username and password.");
+            return res.render("login", {
+                errorMessage: "Please enter username and password.",
+                username: username
+            });
         }
 
         var userRows = await db.query(`
@@ -97,19 +115,28 @@ router.post("/login", async function(req, res) {
         `, [username]);
 
         if (userRows[0].length === 0) {
-            return res.status(400).send("User not found.");
+            return res.render("login", {
+                errorMessage: "User not found.",
+                username: username
+            });
         }
 
         var user = userRows[0][0];
 
         if (user.IsDeleted) {
-            return res.status(403).send("This account has been disabled.");
+            return res.render("login", {
+                errorMessage: "This account has been disabled.",
+                username: username
+            });
         }
 
         var passwordMatches = await bcrypt.compare(password, user.PasswordHash);
 
         if (!passwordMatches) {
-            return res.status(400).send("Incorrect password.");
+            return res.render("login", {
+                errorMessage: "Incorrect username or password.",
+                username: username
+            });
         }
 
        req.session.user = {
@@ -125,7 +152,10 @@ router.post("/login", async function(req, res) {
         res.redirect("/");
     } catch (err) {
         console.error("Login error:", err);
-        res.status(500).send("Could not log in.");
+        res.status(500).render("login", {
+            errorMessage: "Could not log in.",
+            username: (req.body.username || "").trim()
+        });
     }
 });
 
