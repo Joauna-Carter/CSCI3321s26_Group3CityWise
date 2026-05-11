@@ -10,6 +10,10 @@ User account system including register, login, and profile. City browsing with d
 
 Backend: Node.js and Express. Frontend: EJS templates. Database: MySQL. Authentication: bcrypt and express-session. Testing: Jest and Supertest.
 
+## Docker 
+
+Run 'docker compose up --build -d' to use docker. This must be done after a change is made. 
+
 ## Getting Started
 
 1. Fork the repository on GitHub and clone your fork using git clone [https://github.com/YOUR-USERNAME/REPOSITORY-NAME.git](https://github.com/YOUR-USERNAME/REPOSITORY-NAME.git) then move into the folder with cd REPOSITORY-NAME.

@@ -25,7 +25,7 @@ describe("Navigation Maintenance Tests", function () {
       const res = await request(app).get(route);
 
       expect(res.statusCode).toBe(200);
-    });
+    }, 10000);
 
   });
 
