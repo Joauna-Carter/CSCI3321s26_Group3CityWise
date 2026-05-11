@@ -107,10 +107,11 @@ router.post("/login", async function(req, res) {
             });
         }
 
+        // login username field is now case sensitive
         var userRows = await db.query(`
             SELECT UserID, Username, PasswordHash, UserType, IsDeleted
             FROM Users
-            WHERE Username = ?
+            WHERE BINARY Username = ?
             LIMIT 1
         `, [username]);
 
