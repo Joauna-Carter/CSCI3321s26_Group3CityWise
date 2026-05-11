@@ -115,7 +115,7 @@
 ,7,FunFact,Culture,Global city ranking,Alpha global city,NULL,NULL
 ,7,FunFact,Landmark,World's widest avenue,9 de Julio,NULL,https://greatruns.com/wp-content/uploads/2017/05/avenida-9-de-julio-buenos-aires.jpeg
 ,7,FunFact,Culture,Famous Author,Jorge Luis Borges,NULL,https://upload.wikimedia.org/wikipedia/commons/8/89/Jorge_Luis_Borges_1951%2C_by_Grete_Stern_%28full%29.jpg
-,8,QuickFact,General,Population,9800000,9.8 million,NULL
+,8,QuickFact,General,Population,"9,800,000",9.8 million,NULL
 ,8,QuickFact,General,Demonym,Cairene,NULL,NULL
 ,8,QuickFact,Culture,Nickname,City of a Thousand Minarets,NULL,NULL
 ,8,FunFact,Geography,River flowing through Cairo,Nile River,NULL,https://www.tripsavvy.com/thmb/CJcguDmXNOqGJ21WOMt72-0NN9U=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/cairo05-56a1f4495f9b58b7d0c511ae.JPG
@@ -127,7 +127,7 @@
 ,8,QuickFact,Landmark,Oldest university in Cairo,Al-Azhar University,4.7 million,https://cdn.britannica.com/74/228474-050-267470B8/View-from-the-Citadel-of-Old-Cairo-including-the-ancient-Al-Azhar-University-and-mosque.jpg
 ,8,QuickFact,Culture,UNESCO World Heritage site,Historic Cairo,NULL,NULL
 ,9,QuickFact,General,Country,South Africa,NULL,NULL
-,9,QuickFact,General,Population,4772846,4.7 million,NULL
+,9,QuickFact,General,Population,"4,772,846",4.7 million,NULL
 ,9,QuickFact,General,Demonym,Capetonian,NULL,NULL
 ,9,QuickFact,Culture,Nickname,Mother City,NULL,NULL
 ,9,QuickFact,Culture,Nickname,Tavern of the Seas,NULL,NULL
@@ -150,7 +150,7 @@
 ,9,FunFact,,,,NULL,
 ,10,QuickFact,General,Country,Australia,NULL,NULL
 ,10,QuickFact,General,State,Victoria,NULL,NULL
-,10,QuickFact,General,Population,6000000,6 million,NULL
+,10,QuickFact,General,Population,"6,000,000",6 million,NULL
 ,10,QuickFact,General,Demonym,Melburnian,NULL,NULL
 ,10,QuickFact,Geography,Bay,Port Phillip Bay,NULL,https://www.visitmelbourne.com/-/media/atdw/melbourne/see-and-do/nature-and-wildlife/national-parks-and-reserves/edd63a29b1f9f2b7d099f4f1cd5a3945_1600x1200.jpeg?ts=20251102391048
 ,10,QuickFact,Geography,River,Yarra River,NULL,https://assets.travelloapp.com/uploads/deal/highlights-of-melbourne-cruise.jpg
