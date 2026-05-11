@@ -39,14 +39,16 @@
             <% } %>
 
             <form action="/login" method="POST" class="account-form">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" value="<%= username || '' %>" required>
+                <label for="email">Email</label>
+                <input type="text" id="email" name="email" value="<%= email || '' %>" required>
 
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required>
 
                 <button type="submit">Log In</button>
             </form>
+
+            <p><small>Older accounts can still use their username.</small></p>
 
             <p>Need an account? <a href="/register">Create one here</a>.</p>
         </section>

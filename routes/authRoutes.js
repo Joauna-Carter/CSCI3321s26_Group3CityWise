@@ -13,7 +13,8 @@ router.get("/", function(req, res) {
 router.get("/register", function(req, res) {
     res.render("register", {
         errorMessage: "",
-        username: ""
+        username: "",
+        email: ""
     });
 });
 
@@ -21,12 +22,24 @@ router.get("/register", function(req, res) {
 router.post("/register", async function(req, res) {
     try {
         var username = (req.body.username || "").trim();
+        var email = (req.body.email || "").trim().toLowerCase();
         var password = (req.body.password || "").trim();
+        var emailColumnRows = await db.query(`
+            SHOW COLUMNS FROM Users LIKE 'Email'
+        `);
 
-        if (!username || !password) {
+        if (emailColumnRows[0].length === 0) {
+            await db.query(`
+                ALTER TABLE Users
+                ADD COLUMN Email VARCHAR(255) NULL UNIQUE
+            `);
+        }
+
+        if (!username || !email || !password) {
             return res.render("register", {
-                errorMessage: "Username and password are required.",
-                username: username
+                errorMessage: "Username, email, and password are required.",
+                username: username,
+                email: email
             });
         }
 
@@ -39,16 +52,31 @@ router.post("/register", async function(req, res) {
         if (existingUserRows[0].length > 0) {
             return res.render("register", {
                 errorMessage: "Username already exists.",
-                username: username
+                username: username,
+                email: email
+            });
+        }
+
+        var existingEmailRows = await db.query(`
+            SELECT UserID
+            FROM Users
+            WHERE Email = ?
+        `, [email]);
+
+        if (existingEmailRows[0].length > 0) {
+            return res.render("register", {
+                errorMessage: "Email already exists.",
+                username: username,
+                email: email
             });
         }
 
         var passwordHash = await bcrypt.hash(password, 10);
 
         var insertUser = await db.query(`
-            INSERT INTO Users (Username, PasswordHash, UserType)
-            VALUES (?, ?, ?)
-        `, [username, passwordHash, "user"]);
+            INSERT INTO Users (Username, Email, PasswordHash, UserType)
+            VALUES (?, ?, ?, ?)
+        `, [username, email, passwordHash, "user"]);
 
         var userId = insertUser[0].insertId;
 
@@ -81,7 +109,8 @@ router.post("/register", async function(req, res) {
         console.error("Register error:", err);
         res.status(500).render("register", {
             errorMessage: "Could not create account.",
-            username: (req.body.username || "").trim()
+            username: (req.body.username || "").trim(),
+            email: (req.body.email || "").trim().toLowerCase()
         });
     }
 });
@@ -90,35 +119,59 @@ router.post("/register", async function(req, res) {
 router.get("/login", function(req, res) {
     res.render("login", {
         errorMessage: "",
-        username: ""
+        email: ""
     });
 });
 
 // login submit
 router.post("/login", async function(req, res) {
     try {
-        var username = (req.body.username || "").trim();
+        var email = (req.body.email || req.body.username || "").trim();
         var password = (req.body.password || "").trim();
+        var emailColumnRows = await db.query(`
+            SHOW COLUMNS FROM Users LIKE 'Email'
+        `);
+        var hasEmailColumn = emailColumnRows[0].length > 0;
 
-        if (!username || !password) {
+        if (!hasEmailColumn) {
+            await db.query(`
+                ALTER TABLE Users
+                ADD COLUMN Email VARCHAR(255) NULL UNIQUE
+            `);
+
+            hasEmailColumn = true;
+        }
+
+        if (!email || !password) {
             return res.render("login", {
-                errorMessage: "Please enter username and password.",
-                username: username
+                errorMessage: "Please enter email and password.",
+                email: email
             });
         }
 
-        // login username field is now case sensitive
-        var userRows = await db.query(`
-            SELECT UserID, Username, PasswordHash, UserType, IsDeleted
-            FROM Users
-            WHERE BINARY Username = ?
-            LIMIT 1
-        `, [username]);
+        var userRows;
+
+        if (hasEmailColumn) {
+            userRows = await db.query(`
+                SELECT UserID, Username, Email, PasswordHash, UserType, IsDeleted
+                FROM Users
+                WHERE LOWER(Email) = LOWER(?)
+                   OR ((Email IS NULL OR Email = '') AND BINARY Username = ?)
+                LIMIT 1
+            `, [email, email]);
+        } else {
+            userRows = await db.query(`
+                SELECT UserID, Username, PasswordHash, UserType, IsDeleted
+                FROM Users
+                WHERE BINARY Username = ?
+                LIMIT 1
+            `, [email]);
+        }
 
         if (userRows[0].length === 0) {
             return res.render("login", {
-                errorMessage: "User not found.",
-                username: username
+                errorMessage: "Email or username not found.",
+                email: email
             });
         }
 
@@ -127,7 +180,7 @@ router.post("/login", async function(req, res) {
         if (user.IsDeleted) {
             return res.render("login", {
                 errorMessage: "This account has been disabled.",
-                username: username
+                email: email
             });
         }
 
@@ -135,8 +188,8 @@ router.post("/login", async function(req, res) {
 
         if (!passwordMatches) {
             return res.render("login", {
-                errorMessage: "Incorrect username or password.",
-                username: username
+                errorMessage: "Incorrect email, username, or password.",
+                email: email
             });
         }
 
@@ -155,7 +208,7 @@ router.post("/login", async function(req, res) {
         console.error("Login error:", err);
         res.status(500).render("login", {
             errorMessage: "Could not log in.",
-            username: (req.body.username || "").trim()
+            email: (req.body.email || req.body.username || "").trim()
         });
     }
 });
