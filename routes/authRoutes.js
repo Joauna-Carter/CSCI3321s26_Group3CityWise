@@ -143,7 +143,7 @@ router.post("/login", async function(req, res) {
         }
 
         if (!email || !password) {
-            return res.render("login", {
+            return res.status(400).render("login", {
                 errorMessage: "Please enter email and password.",
                 email: email
             });
@@ -169,7 +169,7 @@ router.post("/login", async function(req, res) {
         }
 
         if (userRows[0].length === 0) {
-            return res.render("login", {
+            return res.status(400).render("login", {
                 errorMessage: "Email or username not found.",
                 email: email
             });
@@ -178,7 +178,7 @@ router.post("/login", async function(req, res) {
         var user = userRows[0][0];
 
         if (user.IsDeleted) {
-            return res.render("login", {
+            return res.status(403).render("login", {
                 errorMessage: "This account has been disabled.",
                 email: email
             });
@@ -187,7 +187,7 @@ router.post("/login", async function(req, res) {
         var passwordMatches = await bcrypt.compare(password, user.PasswordHash);
 
         if (!passwordMatches) {
-            return res.render("login", {
+            return res.status(400).render("login", {
                 errorMessage: "Incorrect email, username, or password.",
                 email: email
             });
