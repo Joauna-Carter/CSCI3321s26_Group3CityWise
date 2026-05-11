@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage City Images</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <style>
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            width: 300px;
+            border: 1px solid #ddd;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .card img {
+            width: 100%;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<main class="city-container">
+
+    <h1>Manage Images: <%= city.CityName %></h1>
+
+    <p>
+        <a href="/cities/<%= city.CityID %>">View City Page</a>
+    </p>
+
+    <h2>Upload New Image</h2>
+
+    <form
+        method="POST"
+        action="/admin/cities/<%= city.CityID %>/images/upload"
+        enctype="multipart/form-data"
+    >
+        <p>
+            <input type="file" name="cityImage" required>
+        </p>
+
+        <p>
+            <input type="text" name="altText" placeholder="Alt text">
+        </p>
+
+        <p>
+            <input type="text" name="caption" placeholder="Caption">
+        </p>
+
+        <button type="submit">
+            Upload Image
+        </button>
+    </form>
+
+    <div class="gallery">
+
+        <% images.forEach(function(image) { %>
+
+            <div class="card">
+
+                <img
+                    src="<%= image.ImagePath %>"
+                    alt="<%= image.AltText %>"
+                >
+
+                <p>
+                    <strong>Caption:</strong>
+                    <%= image.Caption %>
+                </p>
+
+                <p>
+                    <strong>Path:</strong>
+                    <%= image.ImagePath %>
+                </p>
+
+            </div>
+
+        <% }) %>
+
+    </div>
+
+</main>
+
+</body>
+</html>

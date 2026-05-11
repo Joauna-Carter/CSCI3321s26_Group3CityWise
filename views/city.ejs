@@ -134,6 +134,7 @@
       <div class="admin-tool-links">
         <a href="/admin/cities/<%= city.CityID %>/content">Edit City Page Content</a>
         <a href="/admin/cities/<%= city.CityID %>/history">View Edit History</a>
+        <a href="/admin/cities/<%= city.CityID %>/images">Manage Images</a>
         <a href="/admin">Admin Dashboard</a>
       </div>
 
@@ -214,6 +215,25 @@
       <p>Sources can be added later.</p>
     <% } %>
   </div>
+
+  <% if (cityImages && cityImages.length > 0) { %>
+    <h2>Gallery</h2>
+    <div class="gallery">
+      <% cityImages.forEach(function(image) { %>
+        <div class="gallery-item">
+          <img
+            class="city-image"
+            src="<%= image.ImagePath %>"
+            alt="<%= image.AltText %>"
+          >
+
+          <% if (image.Caption) { %>
+            <p><%= image.Caption %></p>
+          <% } %>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
 
   <div class="section">
     <h2>Test Your Knowledge</h2>

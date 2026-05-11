@@ -5,6 +5,42 @@ var express = require("express"); // Express framework
 var router = express.Router(); // Router for admin routes
 var db = require("../db/connection"); // Database connection
 var auth = require("../middleware/auth"); // Admin middleware
+var multer = require("multer"); 
+var path = require("path"); // For handling file uploads
+
+// image upload storage config
+var storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, path.join(__dirname, "../public/uploads"));
+    },
+
+    filename: function(req, file, cb) {
+        var uniqueName =
+            Date.now() + "-" + Math.round(Math.random() * 1E9);
+
+        cb(null, uniqueName + path.extname(file.originalname));
+    }
+});
+
+var upload = multer({
+    storage: storage,
+
+    fileFilter: function(req, file, cb) {
+        var allowed = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
+
+        var ext = path.extname(file.originalname).toLowerCase();
+
+        if (!allowed.includes(ext)) {
+            return cb(new Error("Invalid image type."));
+        }
+
+        cb(null, true);
+    },
+
+    limits: {
+        fileSize: 5 * 1024 * 1024
+    }
+});
 
 // Defines every admin-visible table and what admins are allowed to change
 function getAdminTables() {
@@ -575,6 +611,83 @@ router.post("/admin/database/:table/unhide", auth.requireAdmin, async function(r
     } catch (err) {
         console.error("Unhide row error:", err);
         res.status(500).send("Could not unhide row.");
+    }
+});
+
+// admin image upload page
+router.get("/admin/cities/:cityId/images", auth.requireAdmin, async function(req, res) {
+    try {
+        var cityId = req.params.cityId;
+
+        var cityRows = await db.query(`
+            SELECT *
+            FROM Cities
+            WHERE CityID = ?
+            LIMIT 1
+        `, [cityId]);
+
+        if (cityRows[0].length === 0) {
+            return res.status(404).send("City not found.");
+        }
+
+        var imageRows = await db.query(`
+            SELECT *
+            FROM CityPageImages
+            WHERE CityID = ?
+            ORDER BY CityPageImageID DESC
+        `, [cityId]);
+
+        res.render("adminCityImages", {
+            city: cityRows[0][0],
+            images: imageRows[0]
+        });
+
+    } catch (err) {
+        console.error("Admin image page error:", err);
+        res.status(500).send("Could not load image manager.");
+    }
+});
+
+// upload city image
+router.post(
+    "/admin/cities/:cityId/images/upload",
+    auth.requireAdmin,
+    upload.single("cityImage"),
+    async function(req, res) {
+
+    try {
+        var cityId = req.params.cityId;
+
+        if (!req.file) {
+            return res.status(400).send("No image uploaded.");
+        }
+
+        var imagePath = "/uploads/" + req.file.filename;
+
+        await db.query(`
+            INSERT INTO CityPageImages
+            (
+                CityID,
+                ImagePath,
+                AltText,
+                Caption,
+                UploadedByUserID,
+                IsActive
+            )
+            VALUES (?, ?, ?, ?, ?, 1)
+        `, [
+            cityId,
+            imagePath,
+            req.body.altText || "",
+            req.body.caption || "",
+            req.session.user.userId
+        ]);
+
+        res.redirect("/admin/cities/" + cityId + "/images");
+
+    } catch (err) {
+        console.error("Image upload error:", err);
+        res.status(500).send("Could not upload image.");
     }
 });
 

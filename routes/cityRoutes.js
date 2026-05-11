@@ -102,13 +102,23 @@ router.get("/cities/:id", async function(req, res) {
             return fact.FactImagePath && fact.FactImagePath !== "";
         });
 
+        var imageRows = await db.query(`
+            SELECT *
+            FROM CityPageImages
+            WHERE CityID = ?
+            AND IsActive = 1
+        `, [cityId]);
+
+        var cityImages = imageRows[0];
+
         res.render("city", {
             city: city,
             quickFacts: quickFacts,
             funFacts: funFacts,
             factsWithImages: factsWithImages,
             pageContent: pageRows[0].length > 0 ? pageRows[0][0].PageContent : null,
-            isAdmin: isAdmin
+            isAdmin: isAdmin,
+            cityImages: cityImages
         });
     } catch (err) {
         console.error("City page error:", err);
