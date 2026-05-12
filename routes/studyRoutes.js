@@ -10,6 +10,10 @@ var { renderPage, escapeHtml } = require("../utils/pageHelpers");
 router.get("/study", async function(req, res) {
     try {
         var selectedCityId = req.query.cityId || "";
+        var selectedRegionId = req.query.regionId || "";
+        var requestedCityCount = req.query.requestedCityCount || "";
+        var selectedDifficulty = req.query.difficulty || "easy";
+        var timed = req.query.timed === "1";
         var mode = req.query.mode || "quiz";
 
         var cityRows = await db.query(`
@@ -28,7 +32,12 @@ router.get("/study", async function(req, res) {
             cities: cityRows[0],
             regions: regionRows[0],
             selectedCityId: selectedCityId,
-            mode: mode
+            selectedRegionId: selectedRegionId,
+            requestedCityCount: requestedCityCount,
+            selectedDifficulty: selectedDifficulty,
+            timed: timed,
+            mode: mode,
+            errorMessage: ""
         });
     } catch (err) {
         console.error("Study page error:", err);
@@ -45,13 +54,147 @@ router.post("/study/start", async function(req, res) {
         var requestedCityCount = req.body.requestedCityCount || "";
         var difficulty = req.body.difficulty || "easy";
         var timed = req.body.timed === "1";
+        var hasCity = cityId !== "";
+        var hasRegion = regionId !== "";
+        var hasRandom = requestedCityCount !== "" && Number(requestedCityCount) > 0;
+        var selectionCount = [hasCity, hasRegion, hasRandom].filter(Boolean).length;
+
+        if (selectionCount > 1) {
+            var cityRows = await db.query(`
+                SELECT CityID, CityName
+                FROM Cities
+                ORDER BY CityName
+            `);
+
+            var regionRows = await db.query(`
+                SELECT RegionID, RegionName
+                FROM Regions
+                ORDER BY RegionName
+            `);
+
+            return res.status(400).render("study", {
+                cities: cityRows[0],
+                regions: regionRows[0],
+                selectedCityId: cityId,
+                selectedRegionId: regionId,
+                requestedCityCount: requestedCityCount,
+                selectedDifficulty: difficulty,
+                timed: timed,
+                mode: mode,
+                errorMessage: "Choose only one selection method before starting an activity."
+            });
+        }
+
+        var selectedCities = await quizHelpers.getSelectedCities({
+            cityId: cityId,
+            regionId: regionId,
+            requestedCityCount: requestedCityCount
+        });
+
+        if (!selectedCities || selectedCities.length === 0) {
+            var cityRows = await db.query(`
+                SELECT CityID, CityName
+                FROM Cities
+                ORDER BY CityName
+            `);
+
+            var regionRows = await db.query(`
+                SELECT RegionID, RegionName
+                FROM Regions
+                ORDER BY RegionName
+            `);
+
+            return res.status(400).render("study", {
+                cities: cityRows[0],
+                regions: regionRows[0],
+                selectedCityId: cityId,
+                selectedRegionId: regionId,
+                requestedCityCount: requestedCityCount,
+                selectedDifficulty: difficulty,
+                timed: timed,
+                mode: mode,
+                errorMessage: "No cities were found for that selection. Please try a different city, region, or random count."
+            });
+        }
 
         if (mode === "flashcards") {
+            var flashcardFacts = await quizHelpers.getFactsForCities(selectedCities.map(function(city) {
+                return city.CityID;
+            }));
+
+            if (flashcardFacts.length === 0) {
+                var cityRows = await db.query(`
+                    SELECT CityID, CityName
+                    FROM Cities
+                    ORDER BY CityName
+                `);
+
+                var regionRows = await db.query(`
+                    SELECT RegionID, RegionName
+                    FROM Regions
+                    ORDER BY RegionName
+                `);
+
+                return res.status(400).render("study", {
+                    cities: cityRows[0],
+                    regions: regionRows[0],
+                    selectedCityId: cityId,
+                    selectedRegionId: regionId,
+                    requestedCityCount: requestedCityCount,
+                    selectedDifficulty: difficulty,
+                    timed: timed,
+                    mode: mode,
+                    errorMessage: "No flashcard facts are available for that selection yet."
+                });
+            }
+
             var flashcardUrl = "/flashcards/start?cityId=" + encodeURIComponent(cityId) +
                 "&regionId=" + encodeURIComponent(regionId) +
                 "&requestedCityCount=" + encodeURIComponent(requestedCityCount);
 
             return res.redirect(flashcardUrl);
+        }
+
+        var cityIds = selectedCities.map(function(city) {
+            return city.CityID;
+        });
+        var facts = await quizHelpers.getFactsForCities(cityIds);
+        var allFacts = await quizHelpers.getAllFactsForChoices();
+        var allCities = await quizHelpers.getAllCitiesForChoices();
+        var templates = await quizHelpers.getQuestionTemplates();
+        var questions = quizHelpers.generateQuizQuestions(
+            selectedCities,
+            facts,
+            templates,
+            difficulty,
+            allFacts,
+            allCities
+        );
+
+        if (!questions || questions.length === 0) {
+            var cityRows = await db.query(`
+                SELECT CityID, CityName
+                FROM Cities
+                ORDER BY CityName
+            `);
+
+            var regionRows = await db.query(`
+                SELECT RegionID, RegionName
+                FROM Regions
+                ORDER BY RegionName
+            `);
+
+            return res.status(400).render("study", {
+                cities: cityRows[0],
+                regions: regionRows[0],
+                selectedCityId: cityId,
+                selectedRegionId: regionId,
+                requestedCityCount: requestedCityCount,
+                selectedDifficulty: difficulty,
+                timed: timed,
+                mode: mode,
+                errorMessage: "A quiz could not be generated for that selection yet. Please try another option."
+            });
         }
 
         var quizUrl = "/quiz/start?cityId=" + encodeURIComponent(cityId) +
@@ -63,7 +206,29 @@ router.post("/study/start", async function(req, res) {
         res.redirect(quizUrl);
     } catch (err) {
         console.error("Study start error:", err);
-        res.status(500).send("Could not start activity.");
+        var cityRows = await db.query(`
+            SELECT CityID, CityName
+            FROM Cities
+            ORDER BY CityName
+        `);
+
+        var regionRows = await db.query(`
+            SELECT RegionID, RegionName
+            FROM Regions
+            ORDER BY RegionName
+        `);
+
+        res.status(500).render("study", {
+            cities: cityRows[0],
+            regions: regionRows[0],
+            selectedCityId: req.body.cityId || "",
+            selectedRegionId: req.body.regionId || "",
+            requestedCityCount: req.body.requestedCityCount || "",
+            selectedDifficulty: req.body.difficulty || "easy",
+            timed: req.body.timed === "1",
+            mode: req.body.mode || "quiz",
+            errorMessage: "Could not start activity."
+        });
     }
 });
 

@@ -10,14 +10,8 @@ var statsRoutes = require("./routes/statsRoutes");
 var adminRoutes = require("./routes/adminRoutes");
 var studyRoutes = require("./routes/studyRoutes");
 
-console.log("authRoutes:", typeof authRoutes);
-console.log("cityRoutes:", typeof cityRoutes);
-console.log("statsRoutes:", typeof statsRoutes);
-console.log("adminRoutes:", typeof adminRoutes);
-console.log("studyRoutes:", typeof studyRoutes);
-
 var app = express();
-var PORT = process.env.PORT || 3000;
+var PORT = process.env.PORT || 3001;
 
 // view engine
 app.set("view engine", "ejs");
@@ -66,7 +60,10 @@ app.use("/", statsRoutes);
 app.use("/", adminRoutes);
 app.use("/", studyRoutes);
 
-// start server
-app.listen(PORT, function() {
-    console.log("Server running at http://localhost:" + PORT);
-});
+module.exports = app;
+
+if (require.main === module) {
+    app.listen(PORT, function() {
+        console.log("Server running at http://localhost:" + PORT);
+    });
+}

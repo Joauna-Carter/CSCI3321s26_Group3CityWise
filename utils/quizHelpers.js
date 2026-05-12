@@ -746,12 +746,43 @@ function generateQuizQuestions(selectedCities, facts, templates, difficulty, all
 }
 
 // helper to check fill-in answers
+// won't count wrong for incorrect pluralization (or lack therof)
 function isFillInCorrect(userAnswer, correctAnswer, altAnswers) {
     var normalizedUserAnswer = normalizeAnswer(userAnswer);
     var possibleAnswers = [correctAnswer].concat(altAnswers || []);
 
     return possibleAnswers.some(function(answer) {
-        return normalizeAnswer(answer) === normalizedUserAnswer;
+        var normalizedAnswer = normalizeAnswer(answer);
+
+        if (normalizedAnswer === normalizedUserAnswer) {
+            return true;
+        }
+
+        if (normalizedAnswer === normalizedUserAnswer + "s") {
+            return true;
+        }
+
+        if (normalizedUserAnswer === normalizedAnswer + "s") {
+            return true;
+        }
+
+        if (normalizedAnswer === normalizedUserAnswer + "es") {
+            return true;
+        }
+
+        if (normalizedUserAnswer === normalizedAnswer + "es") {
+            return true;
+        }
+
+        if (normalizedAnswer.slice(-3) === "ies" && normalizedUserAnswer === normalizedAnswer.slice(0, -3) + "y") {
+            return true;
+        }
+
+        if (normalizedUserAnswer.slice(-3) === "ies" && normalizedAnswer === normalizedUserAnswer.slice(0, -3) + "y") {
+            return true;
+        }
+
+        return false;
     });
 }
 

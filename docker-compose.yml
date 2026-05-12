@@ -1,0 +1,41 @@
+services:
+  db:
+    image: mysql:8.0
+    command: --lower_case_table_names=1
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: citywise
+      MYSQL_USER: citywise_user
+      MYSQL_PASSWORD: citywise_password
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - "./db/citywise_backup(2).sql:/docker-entrypoint-initdb.d/01-citywise.sql:ro"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-ucitywise_user", "-pcitywise_password"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_USER: citywise_user
+      DB_PASSWORD: citywise_password
+      DB_NAME: citywise
+      DB_PORT: 3306
+      SESSION_SECRET: citywise_secret_key
+      PORT: 3000
+    ports:
+      - "3001:3000"
+
+volumes:
+  mysql_data:
