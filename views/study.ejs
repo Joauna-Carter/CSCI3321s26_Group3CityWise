@@ -111,6 +111,8 @@
                         <option value="medium" <%= selectedDifficulty === "medium" ? "selected" : "" %>>Medium</option>
                         <option value="hard" <%= selectedDifficulty === "hard" ? "selected" : "" %>>Hard</option>
                     </select>
+                    <br>
+                    <small>Changes the amount of questions based on difficulty.</small>
                 </p>
 
                 <p>
@@ -124,42 +126,6 @@
                     <button type="submit">Start Activity</button>
                 </p>
             </form>
-        </section>
-
-        <section class="home-info">
-            <h2>How It Works</h2>
-
-            <div class="city-grid">
-
-                <div class="city-card">
-                    <h3>Single City Selection</h3>
-                    <p>
-                        Choose one city to focus the quiz or flashcard activity on that city’s facts.
-                    </p>
-                </div>
-
-                <div class="city-card">
-                    <h3>Region Selection</h3>
-                    <p>
-                        Choose one region and CityWise will use cities from that region for the activity.
-                    </p>
-                </div>
-
-                <div class="city-card">
-                    <h3>Random City Selection</h3>
-                    <p>
-                        Enter a city count and CityWise will randomly select that many cities for the activity.
-                    </p>
-                </div>
-
-                <div class="city-card">
-                    <h3>Difficulty</h3>
-                    <p>
-                        Difficulty controls the number of questions. Easy has fewer questions, while medium and hard include more.
-                    </p>
-                </div>
-
-            </div>
         </section>
 
     </main>

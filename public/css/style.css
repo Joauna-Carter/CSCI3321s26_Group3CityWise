@@ -111,13 +111,13 @@ textarea {
 }
 
 .hero h1 {
-    font-size: 42px;
-    margin-bottom: 10px;
+    font-size: 45px;
+    margin-bottom: 12px;
     color: #236f89;
 }
 
 .hero p {
-    font-size: 18px;
+    font-size: 20px;
     max-width: 700px;
     margin: 0 auto;
     color: #3e666b;
@@ -146,6 +146,7 @@ textarea {
 }
 
 .home-info h2 {
+    font-size: 28px;
     color: #2d4a43;
 }
 
@@ -178,6 +179,10 @@ textarea {
     color: #885437;
 }
 
+.city-card p {
+    color: darkslategrey;
+}
+
 /* button inside city card */
 .city-card button {
     margin-top: 10px;
@@ -207,6 +212,11 @@ textarea {
 .form-section h1 {
     text-align: center;
     margin-top: 0;
+    color: rgb(36, 60, 60);
+}
+
+.form-section p {
+    color: darkslategrey;
 }
 
 .account-form {
@@ -218,6 +228,7 @@ textarea {
     margin-top: 10px;
     margin-bottom: 5px;
     font-weight: bold;
+    color: darkslategrey;
 }
 
 .account-form input {
@@ -348,6 +359,14 @@ textarea {
   padding: 10px;
   border: 1px solid #b7c7cb;
   background: #fffaf1;
+}
+
+.leaderboard-table thead {
+    color: rgb(36, 60, 60);
+}
+
+.leaderboard-table tbody {
+    color: darkslategrey;
 }
 
 @media (max-width: 700px) {
