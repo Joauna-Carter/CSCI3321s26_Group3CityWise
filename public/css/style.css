@@ -2,8 +2,37 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #f7f4ed;
-    color: #222;
+    background-color: #f1f8fb;
+    color: #24352d;
+}
+
+a {
+    color: #2f6f86;
+}
+
+button {
+    padding: 10px 14px;
+    border: none;
+    background-color: #679248;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #53793b;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="file"],
+select,
+textarea {
+    border: 1px solid #b7c7cb;
+    background: #fcfaf4;
+    color: #24352d;
 }
 
 /* top navigation bar */
@@ -12,8 +41,8 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 20px 40px;
-    background-color: #d8c3a5;
-    border-bottom: 2px solid #b89b72;
+    background-color: #c6e3dc;
+    border-bottom: 2px solid #8eb8b3;
 }
 
 /* left side of navbar */
@@ -40,25 +69,26 @@ body {
     text-decoration: none;
     font-size: 28px;
     font-weight: bold;
-    color: #3a2f22;
+    color: #236f89;
 }
 
 /* center nav tabs */
 .nav-tab {
     text-decoration: none;
-    color: #3a2f22;
+    color: #236f89;
     font-weight: bold;
     font-size: 18px;
 }
 
 .nav-tab:hover {
     text-decoration: underline;
+    color: #5b8f3f;
 }
 
 /* links on the right side of navbar */
 .nav-right a {
     text-decoration: none;
-    color: #3a2f22;
+    color: #236f89;
     font-weight: bold;
     margin: 0 5px;
 }
@@ -66,7 +96,7 @@ body {
 /* divider between login links */
 .divider {
     margin: 0 5px;
-    color: #3a2f22;
+    color: #236f89;
 }
 
 /* main content container */
@@ -83,18 +113,47 @@ body {
 .hero h1 {
     font-size: 42px;
     margin-bottom: 10px;
+    color: #236f89;
 }
 
 .hero p {
     font-size: 18px;
     max-width: 700px;
     margin: 0 auto;
+    color: #3e666b;
+}
+
+.home-actions {
+    margin-top: 22px;
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.home-button {
+    display: inline-block;
+    padding: 11px 18px;
+    border-radius: 8px;
+    background-color: #2f7c95;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.home-button:hover {
+    background-color: #25657a;
+}
+
+.home-info h2 {
+    color: #2d4a43;
 }
 
 /* cities section title */
 .cities-section h2 {
     margin-bottom: 20px;
     text-align: center;
+    color: #885437;
 }
 
 /* grid layout for city cards */
@@ -106,8 +165,8 @@ body {
 
 /* individual city card */
 .city-card {
-    background-color: white;
-    border: 2px solid #d6c1a3;
+    background-color: #fffaf1;
+    border: 2px solid #e0bb8f;
     border-radius: 10px;
     padding: 20px;
     box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.08);
@@ -116,6 +175,7 @@ body {
 .city-card h3 {
     margin-top: 0;
     font-size: 20px;
+    color: #885437;
 }
 
 /* button inside city card */
@@ -123,7 +183,7 @@ body {
     margin-top: 10px;
     padding: 10px 14px;
     border: none;
-    background-color: #8d6e63;
+    background-color: #679248;
     color: white;
     border-radius: 6px;
     cursor: pointer;
@@ -131,15 +191,15 @@ body {
 
 /* hover effect for button */
 .city-card button:hover {
-    background-color: #6d4c41;
+    background-color: #53793b;
 }
 
 /* create account form section */
 .form-section {
     max-width: 400px;
     margin: 0 auto;
-    background-color: white;
-    border: 2px solid #d6c1a3;
+    background-color: #fffaf1;
+    border: 2px solid #e0bb8f;
     border-radius: 10px;
     padding: 25px;
 }
@@ -164,25 +224,27 @@ body {
     padding: 10px;
     font-size: 16px;
     margin-bottom: 10px;
+    border: 1px solid #b7c7cb;
+    background: #fffaf1;
 }
 
 .account-form button {
     margin-top: 10px;
     padding: 10px;
     border: none;
-    background-color: #8d6e63;
+    background-color: #679248;
     color: white;
     border-radius: 6px;
     cursor: pointer;
 }
 
 .account-form button:hover {
-    background-color: #6d4c41;
+    background-color: #53793b;
 }
 
 .admin-tools {
-  background: #fff8e6;
-  border: 1px solid #e0c67a;
+  background: #f5e1be;
+  border: 1px solid #d2a96d;
   border-radius: 12px;
   padding: 18px;
   margin-top: 32px;
@@ -197,7 +259,7 @@ body {
 
 .admin-tool-links a {
   display: inline-block;
-  background: #1f2937;
+  background: #2f7c95;
   color: white;
   text-decoration: none;
   padding: 8px 12px;
@@ -205,7 +267,7 @@ body {
 }
 
 .admin-tool-links a:hover {
-  background: #374151;
+  background: #25657a;
 }
 
 .admin-inline-form {
@@ -213,7 +275,7 @@ body {
 }
 
 .admin-inline-form button {
-  background: #b91c1c;
+  background: #c47a4f;
   color: white;
   border: none;
   padding: 8px 12px;
@@ -222,20 +284,20 @@ body {
 }
 
 .admin-inline-form button:hover {
-  background: #7f1d1d;
+  background: #a86541;
 }
 
 .admin-warning {
-  background: #fee2e2;
-  border: 1px solid #fca5a5;
-  color: #7f1d1d;
+  background: #fde2d1;
+  border: 1px solid #e1a47f;
+  color: #8a4b30;
   padding: 12px;
   border-radius: 10px;
   margin-bottom: 20px;
 }
 
 .inactive-label {
-  color: #b91c1c;
+  color: #b5683f;
   font-weight: bold;
   margin-left: 8px;
 }
@@ -247,7 +309,7 @@ body {
 
 .admin-table th,
 .admin-table td {
-  border: 1px solid #ddd;
+  border: 1px solid #cfc8b8;
   padding: 8px;
 }
 
@@ -257,7 +319,7 @@ body {
 
 #visualEditor {
   height: 520px;
-  background: white;
+  background: #fffaf1;
 }
 
 #sourceEditor {
@@ -284,4 +346,33 @@ body {
 .edit-summary-box input {
   flex: 1;
   padding: 10px;
+  border: 1px solid #b7c7cb;
+  background: #fffaf1;
+}
+
+@media (max-width: 700px) {
+    .navbar {
+        flex-direction: column;
+        gap: 14px;
+        padding: 18px 20px;
+    }
+
+    .nav-center {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 14px 18px;
+    }
+
+    .nav-right {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .home-container {
+        padding: 24px 20px;
+    }
+
+    .hero h1 {
+        font-size: 34px;
+    }
 }
